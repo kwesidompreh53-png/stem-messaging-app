@@ -11,7 +11,7 @@ from gtts import gTTS
 from celery import Celery
 import requests
 
-app = Flask(__name__, template_folder='template/Templates')
+app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'your_secret_key_here'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///stem.db'
