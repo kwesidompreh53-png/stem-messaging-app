@@ -1,0 +1,87 @@
+/* Custom Dashboard Theme & Styling */
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+}
+
+.navbar {
+    background: linear-gradient(135deg, #1d2671 0%, #c33764 100%) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+    background-color: #ffffff;
+    border-bottom: 2px solid #f0f2f5;
+    font-weight: 700;
+    color: #333333;
+    padding: 1rem 1.25rem;
+}
+
+/* Custom Styled Labels & Badges */
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+    letter-spacing: 0.3px;
+}
+
+.badge {
+    padding: 0.5em 0.8em;
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+/* Custom Buttons with Smooth Gradients */
+.btn-primary {
+    background: linear-gradient(135deg, #1d2671 0%, #c33764 100%);
+    border: none;
+    font-weight: 600;
+    transition: opacity 0.2s ease;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+    background: linear-gradient(135deg, #1d2671 0%, #c33764 100%);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border: none;
+    font-weight: 600;
+}
+
+.btn-success:hover {
+    opacity: 0.9;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
+    border: none;
+    font-weight: 600;
+}
+
+/* Table Enhancements */
+.table th {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-weight: 700;
+    border-top: none;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(29, 38, 113, 0.04);
+}

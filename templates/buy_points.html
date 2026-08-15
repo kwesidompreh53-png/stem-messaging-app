@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buy Points - STE-M</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-dark bg-primary shadow-sm">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">Top Up Points</span>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-light btn-sm">Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="container my-5" style="max-width: 500px;">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white fw-bold">📱 Mobile Money Top-Up</div>
+            <div class="card-body">
+                <div class="alert alert-info text-center">
+                    Current Balance: <strong>{{ balance }} Points</strong>
+                </div>
+                <form action="/initialize-payment" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Select Network</label>
+                        <select class="form-select" name="network" required>
+                            <option value="MTN">MTN Mobile Money</option>
+                            <option value="VOD">Telecel Cash</option>
+                            <option value="ATL">AirtelTigo Money</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mobile Money Number</label>
+                        <input type="text" class="form-control" name="phone_number" 
+                               oninput="this.value = this.value.replace(/[^0-9+]/g, '')" 
+                               placeholder="024XXXXXXX" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Amount (GHS)</label>
+                        <input type="number" class="form-control" name="amount" min="5" step="1" placeholder="e.g. 50" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Pay with Mobile Money</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
