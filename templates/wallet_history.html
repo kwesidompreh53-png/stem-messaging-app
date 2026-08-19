@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wallet History - STEM Platform</title>
-    <!-- Bootstrap CSS CDN for styling -->
-    <link href="[https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css](https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css)" rel="stylesheet">
+    <title>Transaction History - STEM Platform</title>
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body class="bg-light">
 
@@ -13,65 +15,112 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('dashboard') }}">STEM Messaging</a>
-            <div class="navbar-nav ms-auto">
+            <div class="navbar-nav ms-auto align-items-center">
                 <span class="navbar-text text-white me-3">
                     Wallet Balance: <strong>GHS {{ "%.2f"|format(balance or 0.0) }}</strong>
                 </span>
-                <a class="nav-link btn btn-outline-light btn-sm text-dark bg-white px-3" href="{{ url_for('dashboard') }}">Dashboard</a>
+                <a class="btn btn-outline-light btn-sm px-3" href="{{ url_for('dashboard') }}">Dashboard</a>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content Container -->
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-10">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0">Wallet Top-Up History</h4>
-                        <a href="{{ url_for('buy_points') }}" class="btn btn-light btn-sm">Top Up Wallet</a>
+    <!-- Main Container -->
+    <div class="container my-4">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-body p-4">
+                
+                <!-- Top Header Row: Title, Search, and Export -->
+                <div class="row align-items-center mb-4 g-3">
+                    <div class="col-md-4">
+                        <h4 class="fw-bold mb-0 text-dark">Your transaction history</h4>
                     </div>
-                    <div class="card-body">
-                        {% if transactions %}
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover align-middle">
-                                    <thead class="table-dark">
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Amount (GHS)</th>
-                                            <th>Reference</th>
-                                            <th>Status</th>
-                                            <th>Date & Time</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for tx in transactions %}
-                                            <tr>
-                                                <td>{{ loop.index }}</td>
-                                                <td><strong>GHS {{ "%.2f"|format(tx.amount) }}</strong></td>
-                                                <td><code>{{ tx.reference }}</code></td>
-                                                <td>
-                                                    <span class="badge bg-success">{{ tx.status }}</span>
-                                                </td>
-                                                <td>{{ tx.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        {% else %}
-                            <div class="text-center py-4">
-                                <p class="text-muted mb-3">You haven't made any wallet deposits yet.</p>
-                                <a href="{{ url_for('buy_points') }}" class="btn btn-primary">Make Your First Deposit</a>
-                            </div>
-                        {% endif %}
+                    <div class="col-md-8 d-flex justify-content-md-end gap-2 align-items-center">
+                        <!-- Search Bar -->
+                        <div class="input-group" style="max-width: 280px;">
+                            <span class="input-group-text bg-white border-end-0 text-muted">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" id="transactionSearch" class="form-control border-start-0 ps-0 shadow-none" placeholder="Search...">
+                        </div>
+                        <!-- Export Button -->
+                        <button class="btn text-white fw-semibold px-3 d-flex align-items-center gap-1 shadow-sm" style="background-color: #f97316;" onclick="alert('Exporting transactions...')">
+                            <i class="bi bi-download"></i> Export
+                        </button>
                     </div>
                 </div>
+
+                <!-- Transactions Table -->
+                {% if transactions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light text-muted small text-uppercase">
+                                <tr>
+                                    <th class="py-3">Transaction ID</th>
+                                    <th class="py-3">Top up by</th>
+                                    <th class="py-3">Payment Method</th>
+                                    <th class="py-3">Amount <i class="bi bi-arrow-down-up small"></i></th>
+                                    <th class="py-3">Balance Before Deposit</th>
+                                    <th class="py-3">Account</th>
+                                    <th class="py-3">Date <i class="bi bi-arrow-down-up small"></i></th>
+                                    <th class="py-3">Status</th>
+                                    <th class="py-3 text-end"><i class="bi bi-filter"></i> Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for tx in transactions %}
+                                    <tr>
+                                        <td class="fw-medium text-truncate" style="max-width: 140px;" title="{{ tx.reference }}">
+                                            <i class="bi bi-file-earmark text-muted me-1"></i> {{ tx.reference }}
+                                        </td>
+                                        <td>{{ current_user.username }}</td>
+                                        <td><span class="fw-semibold text-secondary">PAYSTACK</span></td>
+                                        <td class="fw-bold text-dark">GHS {{ "%.2f"|format(tx.amount) }}</td>
+                                        <td class="text-muted">GHS 0.00</td>
+                                        <td class="text-muted">0546784166</td>
+                                        <td class="text-muted small">{{ tx.timestamp.strftime('%B %d, %Y at %H:%M') }}</td>
+                                        <td>
+                                            <span class="badge bg-success bg-opacity-10 text-success border border-success-subtle px-2 py-1 rounded-pill d-inline-flex align-items-center gap-1">
+                                                <i class="bi bi-check-circle-fill"></i> Success
+                                            </span>
+                                        </td>
+                                        <td class="text-end">
+                                            <button class="btn btn-light btn-sm text-primary fw-medium border px-2 py-1 shadow-sm d-inline-flex align-items-center gap-1" onclick="alert('Generating receipt for reference: {{ tx.reference }}')">
+                                                <i class="bi bi-file-earmark-text"></i> Generate Receipt
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <div class="mb-3 text-muted">
+                            <i class="bi bi-receipt display-4"></i>
+                        </div>
+                        <h5 class="text-dark fw-semibold">No transactions found</h5>
+                        <p class="text-muted mb-3">You haven't made any top-up transactions yet.</p>
+                        <a href="{{ url_for('buy_points') }}" class="btn text-white fw-semibold px-4 shadow-sm" style="background-color: #f97316;">Top Up Wallet Now</a>
+                    </div>
+                {% endif %}
+
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS Bundle CDN -->
-    <script src="[https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js](https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js)"></script>
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Live Search Filtering Script -->
+    <script>
+        document.getElementById('transactionSearch').addEventListener('keyup', function() {
+            let filter = this.value.toLowerCase();
+            let rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                let text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
+    </script>
 </body>
 </html>
