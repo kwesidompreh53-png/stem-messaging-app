@@ -16,7 +16,7 @@ import openpyxl
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'your_secret_key_here'
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///stem.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql+psycopg://user:pass@host/db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.config['CELERY_BROKER_URL'] = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
