@@ -15,7 +15,7 @@
             <a class="navbar-brand" href="{{ url_for('dashboard') }}">STEM Messaging</a>
             <div class="navbar-nav ms-auto">
                 <span class="navbar-text text-white me-3">
-                    Wallet Balance: <strong>GHS {{ "%.2f"|format(balance) }}</strong>
+                    Wallet Balance: <strong>GHS {{ "%.2f"|format(balance or 0.0) }}</strong>
                 </span>
                 <a class="nav-link btn btn-outline-light btn-sm text-dark bg-white px-3" href="{{ url_for('dashboard') }}">Dashboard</a>
             </div>
@@ -71,5 +71,7 @@
         </div>
     </div>
 
+    <!-- Bootstrap JS Bundle CDN -->
+    <script src="[https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js](https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js)"></script>
 </body>
 </html>
