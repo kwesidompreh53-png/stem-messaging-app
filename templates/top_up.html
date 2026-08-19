@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Up Wallet - DANSOMAN DISTRICT ENGLISH ASSEMBLY DASHBOARD</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm">
+        <div class="container-fluid position-relative d-flex justify-content-between align-items-center">
+            <div style="width: 150px;" class="d-none d-lg-block"></div>
+            <a class="navbar-brand fw-bold mb-0 h1 text-center position-absolute start-50 translate-middle-x fs-6 fs-md-5" href="{{ url_for('dashboard') }}">
+                DANSOMAN DISTRICT ENGLISH ASSEMBLY DASHBOARD
+            </a>
+            <div class="d-flex align-items-center ms-auto">
+                <span class="navbar-text text-white me-3 d-none d-sm-inline">
+                    Wallet Balance: <strong class="text-warning">GHS {{ "%.2f"|format(balance or 0.0) }}</strong>
+                </span>
+                <a class="btn btn-warning btn-sm text-dark fw-semibold px-3" href="{{ url_for('wallet_history') }}">Wallet History</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container my-5" style="max-width: 550px;">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                        <i class="bi bi-wallet2 fs-3"></i>
+                    </div>
+                    <h4 class="fw-bold text-dark mb-1">Top Up Your Wallet</h4>
+                    <p class="text-muted small">Enter the amount you wish to deposit via Paystack (Mobile Money or Bank Card).</p>
+                </div>
+
+                <!-- Flash Messages for Errors / Notifications -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Top Up Form -->
+                <form method="POST" action="{{ url_for('top_up') }}">
+                    <div class="mb-3">
+                        <label for="amount" class="form-label fw-semibold text-secondary">Amount to Top Up (GHS)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white text-muted fw-bold">GHS</span>
+                            <input type="number" step="0.01" class="form-control" id="amount" name="amount" placeholder="0.00" required min="1">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phone_number" class="form-label fw-semibold text-secondary">Phone Number (Mobile Money)</label>
+                        <input type="text" class="form-control" id="phone_number" name="phone_number" placeholder="e.g., 0241234567">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="network" class="form-label fw-semibold text-secondary">Network Provider</label>
+                        <select class="form-select" id="network" name="network">
+                            <option value="MTN">MTN</option>
+                            <option value="VOD">Vodafone (Telecel)</option>
+                            <option value="ATL">AirtelTigo</option>
+                        </select>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-warning fw-bold py-2 text-dark shadow-sm">
+                            <i class="bi bi-shield-lock-fill me-1"></i> Proceed to Paystack
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

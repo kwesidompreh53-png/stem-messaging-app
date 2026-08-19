@@ -84,8 +84,8 @@
                                         <td>{{ current_user.username }}</td>
                                         <td><span class="fw-semibold text-secondary">PAYSTACK</span></td>
                                         <td class="fw-bold text-dark">GHS {{ "%.2f"|format(tx.amount) }}</td>
-                                        <td class="text-muted">GHS 0.00</td>
-                                        <td class="text-muted">0546784166</td>
+                                        <td class="text-muted">GHS {{ "%.2f"|format(tx.balance_before or 0.0) }}</td>
+                                        <td class="text-muted">{{ tx.phone_number or 'N/A' }}</td>
                                         <td class="text-muted small">{{ tx.timestamp.strftime('%B %d, %Y at %H:%M') }}</td>
                                         <td>
                                             <span class="badge bg-success bg-opacity-10 text-success border border-success-subtle px-2 py-1 rounded-pill d-inline-flex align-items-center gap-1">
@@ -109,7 +109,7 @@
                         </div>
                         <h5 class="text-dark fw-semibold">No transactions found</h5>
                         <p class="text-muted mb-3">You haven't made any top-up transactions yet.</p>
-                        <a href="{{ url_for('buy_points') }}" class="btn fw-semibold px-4 shadow-sm text-dark" style="background-color: #ffc107;">Top Up Wallet Now</a>
+                        <a href="{{ url_for('top_up') }}" class="btn fw-semibold px-4 shadow-sm text-dark" style="background-color: #ffc107;">Top Up Wallet Now</a>
                     </div>
                 {% endif %}
 
