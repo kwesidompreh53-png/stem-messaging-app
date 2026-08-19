@@ -111,8 +111,17 @@
                                        placeholder="+233..." required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Ministry Name</label>
-                                <input type="text" class="form-control" name="group_name" placeholder="e.g. Youth, PEMEM, Women's Ministry" value="General" required>
+                                <label class="form-label">Ministry / Group</label>
+                                <select class="form-select" name="group_name" required>
+                                    <option value="" disabled selected>Select category...</option>
+                                    <option value="Member">Member</option>
+                                    <option value="Instrumentalist">Instrumentalist</option>
+                                    <option value="Choir">Choir</option>
+                                    <option value="Media">Media</option>
+                                    <option value="Elders">Elders</option>
+                                    <option value="Deacons">Deacons</option>
+                                    <option value="Deaconess">Deaconess</option>
+                                </select>
                             </div>
                             <button type="submit" class="btn btn-primary w-100">Save Contact</button>
                         </form>
@@ -130,8 +139,17 @@
                                 <div class="form-text" style="font-size: 0.8rem;">Columns: Name, Phone</div>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Target Ministry Name</label>
-                                <input type="text" name="group_name" class="form-control" placeholder="e.g. Youth Ministry" required>
+                                <label class="form-label">Target Ministry / Group</label>
+                                <select class="form-select" name="group_name" required>
+                                    <option value="" disabled selected>Select category...</option>
+                                    <option value="Member">Member</option>
+                                    <option value="Instrumentalist">Instrumentalist</option>
+                                    <option value="Choir">Choir</option>
+                                    <option value="Media">Media</option>
+                                    <option value="Elders">Elders</option>
+                                    <option value="Deacons">Deacons</option>
+                                    <option value="Deaconess">Deaconess</option>
+                                </select>
                             </div>
                             <button type="submit" class="btn btn-primary w-100">Upload & Import Contacts</button>
                         </form>
