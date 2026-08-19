@@ -12,14 +12,14 @@
 <body class="bg-light">
 
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('dashboard') }}">STEM Messaging</a>
+            <a class="navbar-brand fw-bold" href="{{ url_for('dashboard') }}">STEM Messaging</a>
             <div class="navbar-nav ms-auto align-items-center">
                 <span class="navbar-text text-white me-3">
-                    Wallet Balance: <strong>GHS {{ "%.2f"|format(balance or 0.0) }}</strong>
+                    Wallet Balance: <strong class="text-warning">GHS {{ "%.2f"|format(balance or 0.0) }}</strong>
                 </span>
-                <a class="btn btn-outline-light btn-sm px-3" href="{{ url_for('dashboard') }}">Dashboard</a>
+                <a class="btn btn-warning btn-sm text-dark fw-semibold px-3" href="{{ url_for('dashboard') }}">Dashboard</a>
             </div>
         </div>
     </nav>
@@ -32,7 +32,7 @@
                 <!-- Top Header Row: Title, Search, and Export -->
                 <div class="row align-items-center mb-4 g-3">
                     <div class="col-md-4">
-                        <h4 class="fw-bold mb-0 text-dark">Your transaction history</h4>
+                        <h4 class="fw-bold mb-0 text-primary">Your transaction history</h4>
                     </div>
                     <div class="col-md-8 d-flex justify-content-md-end gap-2 align-items-center">
                         <!-- Search Bar -->
@@ -42,8 +42,8 @@
                             </span>
                             <input type="text" id="transactionSearch" class="form-control border-start-0 ps-0 shadow-none" placeholder="Search...">
                         </div>
-                        <!-- Export Button -->
-                        <button class="btn text-white fw-semibold px-3 d-flex align-items-center gap-1 shadow-sm" style="background-color: #f97316;" onclick="alert('Exporting transactions...')">
+                        <!-- Yellow Export Button -->
+                        <button class="btn fw-semibold px-3 d-flex align-items-center gap-1 shadow-sm text-dark" style="background-color: #ffc107;" onclick="alert('Exporting transactions...')">
                             <i class="bi bi-download"></i> Export
                         </button>
                     </div>
@@ -53,7 +53,7 @@
                 {% if transactions %}
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light text-muted small text-uppercase">
+                            <thead class="table-primary text-dark small text-uppercase">
                                 <tr>
                                     <th class="py-3">Transaction ID</th>
                                     <th class="py-3">Top up by</th>
@@ -70,7 +70,7 @@
                                 {% for tx in transactions %}
                                     <tr>
                                         <td class="fw-medium text-truncate" style="max-width: 140px;" title="{{ tx.reference }}">
-                                            <i class="bi bi-file-earmark text-muted me-1"></i> {{ tx.reference }}
+                                            <i class="bi bi-file-earmark text-primary me-1"></i> {{ tx.reference }}
                                         </td>
                                         <td>{{ current_user.username }}</td>
                                         <td><span class="fw-semibold text-secondary">PAYSTACK</span></td>
@@ -84,7 +84,7 @@
                                             </span>
                                         </td>
                                         <td class="text-end">
-                                            <button class="btn btn-light btn-sm text-primary fw-medium border px-2 py-1 shadow-sm d-inline-flex align-items-center gap-1" onclick="alert('Generating receipt for reference: {{ tx.reference }}')">
+                                            <button class="btn btn-outline-primary btn-sm fw-medium px-2 py-1 shadow-sm d-inline-flex align-items-center gap-1" onclick="alert('Generating receipt for reference: {{ tx.reference }}')">
                                                 <i class="bi bi-file-earmark-text"></i> Generate Receipt
                                             </button>
                                         </td>
@@ -95,12 +95,12 @@
                     </div>
                 {% else %}
                     <div class="text-center py-5">
-                        <div class="mb-3 text-muted">
+                        <div class="mb-3 text-primary">
                             <i class="bi bi-receipt display-4"></i>
                         </div>
                         <h5 class="text-dark fw-semibold">No transactions found</h5>
                         <p class="text-muted mb-3">You haven't made any top-up transactions yet.</p>
-                        <a href="{{ url_for('buy_points') }}" class="btn text-white fw-semibold px-4 shadow-sm" style="background-color: #f97316;">Top Up Wallet Now</a>
+                        <a href="{{ url_for('buy_points') }}" class="btn fw-semibold px-4 shadow-sm text-dark" style="background-color: #ffc107;">Top Up Wallet Now</a>
                     </div>
                 {% endif %}
 
