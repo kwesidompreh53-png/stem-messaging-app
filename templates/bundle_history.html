@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bundle History - STEM Platform</title>
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('dashboard') }}">STEM Messaging</a>
+            <div class="navbar-nav ms-auto align-items-center">
+                <span class="navbar-text text-white me-3">
+                    Wallet Balance: <strong class="text-warning">GHS {{ "%.2f"|format(balance or 0.0) }}</strong>
+                </span>
+                <a class="btn btn-warning btn-sm text-dark fw-semibold px-3" href="{{ url_for('dashboard') }}">Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container my-4">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-body p-4">
+                
+                <!-- Top Header Row: SMS/Voice Tabs, Search, and Export -->
+                <div class="row align-items-center mb-4 g-3">
+                    <div class="col-md-5">
+                        <!-- SMS / Voice Tabs Pills -->
+                        <ul class="nav nav-pills gap-2" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link px-4 py-2 fw-semibold bg-light text-secondary border" type="button">SMS</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link px-4 py-2 fw-semibold text-white bg-primary active shadow-sm" type="button">Voice</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-7 d-flex justify-content-md-end gap-2 align-items-center">
+                        <!-- Search Bar -->
+                        <div class="input-group" style="max-width: 260px;">
+                            <span class="input-group-text bg-white border-end-0 text-muted">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" id="bundleSearch" class="form-control border-start-0 ps-0 shadow-none" placeholder="Search...">
+                        </div>
+                        <!-- Yellow Export Button -->
+                        <button class="btn fw-semibold px-3 d-flex align-items-center gap-1 shadow-sm text-dark" style="background-color: #ffc107;" onclick="alert('Exporting bundle history...')">
+                            <i class="bi bi-download"></i> Export
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bundles Table -->
+                {% if bundles %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-primary text-dark small text-uppercase">
+                                <tr>
+                                    <th class="py-3">Voice Balance <i class="bi bi-arrow-down-up small"></i></th>
+                                    <th class="py-3">Amount <i class="bi bi-arrow-down-up small"></i></th>
+                                    <th class="py-3">Bundle Type</th>
+                                    <th class="py-3">Bundle By</th>
+                                    <th class="py-3">Wallet ID</th>
+                                    <th class="py-3">Purchase Date <i class="bi bi-arrow-down-up small"></i></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for b in bundles %}
+                                    <tr>
+                                        <td class="fw-semibold text-dark">{{ b.balance_remaining | default('58s') }}</td>
+                                        <td class="fw-bold text-dark">GHS {{ "%.2f"|format(b.amount) }}</td>
+                                        <td>
+                                            <span class="badge text-dark border px-2 py-1 rounded-pill fw-semibold" style="background-color: #ffc107;">
+                                                {{ b.bundle_type | default('Voice') }}
+                                            </span>
+                                        </td>
+                                        <td class="text-secondary">{{ b.bundle_by | default(current_user.username) }}</td>
+                                        <td class="text-muted"><code>{{ b.wallet_id | default(current_user.id) }}</code></td>
+                                        <td class="text-muted small">{{ b.timestamp.strftime('%B %d, %Y at %I:%M %p') if b.timestamp else 'July 26, 2026 at 01:05 PM' }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <div class="mb-3 text-primary">
+                            <i class="bi bi-collection display-4"></i>
+                        </div>
+                        <h5 class="text-dark fw-semibold">No bundle history found</h5>
+                        <p class="text-muted mb-3">You haven't purchased any bundles yet.</p>
+                        <a href="{{ url_for('purchase_bundle') }}" class="btn fw-semibold px-4 shadow-sm text-dark" style="background-color: #ffc107;">Purchase a Bundle</a>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Live Search Filtering Script -->
+    <script>
+        document.getElementById('bundleSearch').addEventListener('keyup', function() {
+            let filter = this.value.toLowerCase();
+            let rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                let text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>
