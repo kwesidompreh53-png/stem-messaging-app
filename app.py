@@ -531,7 +531,7 @@ def top_up():
             }
         }
         
-        response = requests.post("[https://api.paystack.co/transaction/initialize](https://api.paystack.co/transaction/initialize)", json=payload, headers=headers)
+        response = requests.post("https://api.paystack.co/transaction/initialize", json=payload, headers=headers)
         data = response.json()
         
         if data.get('status'):
