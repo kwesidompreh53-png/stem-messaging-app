@@ -3,49 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buy Points - STE-M</title>
+    <title>Purchase Bundle - STEM Platform</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-
-    <nav class="navbar navbar-dark bg-primary shadow-sm">
-        <div class="container-fluid">
-            <span class="navbar-brand mb-0 h1">Top Up Points</span>
-            <a href="{{ url_for('dashboard') }}" class="btn btn-light btn-sm">Dashboard</a>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('dashboard') }}">STEM Messaging App</a>
+            <div class="navbar-nav ms-auto">
+                <span class="nav-item nav-link text-warning fw-bold">Wallet Balance: GHS {{ "%.2f"|format(balance) }}</span>
+                <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
+                <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+            </div>
         </div>
     </nav>
 
-    <div class="container my-5" style="max-width: 500px;">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white fw-bold">📱 Mobile Money Top-Up</div>
-            <div class="card-body">
-                <div class="alert alert-info text-center">
-                    Current Balance: <strong>{{ balance }} Points</strong>
+    <div class="container mb-5">
+        <!-- Tab Navigation Buttons -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-8">
+                <div class="btn-group w-100 shadow-sm" role="group">
+                    <a href="{{ url_for('buy_points') }}" class="btn btn-warning fw-bold">Purchase Bundle</a>
+                    <a href="{{ url_for('wallet_history') }}" class="btn btn-outline-secondary">Wallet History</a>
+                    <a href="{{ url_for('bundle_history') }}" class="btn btn-outline-secondary">Bundle History</a>
                 </div>
-                <form action="/initialize-payment" method="POST">
-                    <div class="mb-3">
-                        <label class="form-label">Select Network</label>
-                        <select class="form-select" name="network" required>
-                            <option value="MTN">MTN Mobile Money</option>
-                            <option value="VOD">Telecel Cash</option>
-                            <option value="ATL">AirtelTigo Money</option>
-                        </select>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-8 text-center">
+                <h2>Purchase Voice & SMS Bundles</h2>
+                <p class="text-muted">Select a plan below to instantly deduct from your wallet balance and purchase.</p>
+            </div>
+        </div>
+
+        <!-- Preset Bundle Cards Grid -->
+        <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+            {% set plans = [
+                {'amount': 10, 'title': 'Starter Bundle', 'type': 'Voice'},
+                {'amount': 20, 'title': 'Basic Bundle', 'type': 'Voice'},
+                {'amount': 50, 'title': 'Standard Bundle', 'type': 'Voice'},
+                {'amount': 100, 'title': 'Pro Bundle', 'type': 'Voice'},
+                {'amount': 200, 'title': 'Advanced Bundle', 'type': 'Voice'},
+                {'amount': 300, 'title': 'Executive Bundle', 'type': 'Voice'},
+                {'amount': 500, 'title': 'Enterprise Bundle', 'type': 'Voice'},
+                {'amount': 1000, 'title': 'Ultimate Bundle', 'type': 'Voice'},
+                {'amount': 2000, 'title': 'Mega Corporate Bundle', 'type': 'Voice'}
+            ] %}
+
+            {% for plan in plans %}
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center d-flex flex-column justify-content-between">
+                        <div>
+                            <h5 class="card-title text-secondary">{{ plan.title }}</h5>
+                            <h3 class="text-primary fw-bold my-3">GHS {{ "%.2f"|format(plan.amount) }}</h3>
+                        </div>
+                        <form action="{{ url_for('buy_points') }}" method="POST">
+                            <input type="hidden" name="amount" value="{{ plan.amount }}">
+                            <input type="hidden" name="bundle_category" value="{{ plan.type }}">
+                            <input type="hidden" name="plan_type" value="{{ plan.title }} (GHS {{ plan.amount }})">
+                            <button type="submit" class="btn btn-primary w-100">Choose Plan</button>
+                        </form>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Mobile Money Number</label>
-                        <input type="text" class="form-control" name="phone_number" 
-                               oninput="this.value = this.value.replace(/[^0-9+]/g, '')" 
-                               placeholder="024XXXXXXX" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Amount (GHS)</label>
-                        <input type="number" class="form-control" name="amount" min="5" step="1" placeholder="e.g. 50" required>
-                    </div>
-                    <button type="submit" class="btn btn-success w-100">Pay with Mobile Money</button>
-                </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Custom Non-Expiry Amount Section -->
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 p-4">
+                    <h4 class="mb-3 text-center">Custom Bundle Amount</h4>
+                    <form action="{{ url_for('buy_points') }}" method="POST">
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Enter Custom Amount (GHS)</label>
+                            <input type="number" step="0.01" class="form-control" id="amount" name="amount" placeholder="e.g. 75" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bundle_category" class="form-label">Category</label>
+                            <select class="form-select" id="bundle_category" name="bundle_category">
+                                <option value="Voice">Voice Call Bundle</option>
+                                <option value="SMS">SMS Bundle</option>
+                            </select>
+                        </div>
+                        <input type="hidden" name="plan_type" value="Custom Bundle">
+                        <button type="submit" class="btn btn-success w-100">Purchase Custom Plan</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-
 </body>
 </html>
