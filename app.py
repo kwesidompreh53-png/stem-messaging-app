@@ -325,6 +325,7 @@ def add_contact_web():
     return redirect(url_for('dashboard'))
 
 # --- EXCEL CONTACT UPLOAD ROUTE USING OPENPYXL ---
+@app.route('/upload-excel', methods=['POST'])
 @app.route('/upload-contacts-excel', methods=['POST'])
 @login_required
 def upload_contacts_excel():
@@ -383,6 +384,9 @@ def upload_contacts_excel():
             return f"Error processing Excel sheet: {str(e)} <a href='/'>Go back</a>", 400
             
     return "Invalid file format. Please upload an Excel (.xlsx or .xls) file. <a href='/'>Go back</a>", 400
+
+# Alias helper route name for backward compatibility with templates
+app.view_functions['upload_excel'] = upload_contacts_excel
 
 @app.route('/edit-contact/<int:contact_id>', methods=['GET', 'POST'])
 @login_required
