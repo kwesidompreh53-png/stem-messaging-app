@@ -508,9 +508,9 @@ def voice_webhook():
             db.session.commit()
     return '', 200
 
-db = SQLAlchemy(app)
+# Global table creation for Gunicorn/Render compatibility
 with app.app_context():
     db.create_all()
+
 if __name__ == '__main__':
     app.run(debug=True)
-    
