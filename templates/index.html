@@ -91,9 +91,10 @@
     <div class="container my-5">
         <div class="row g-4">
             
-            <!-- Column 1: Add Contact Form -->
+            <!-- Column 1: Add Contact & Excel Upload Forms -->
             <div class="col-md-4">
-                <div class="card shadow-sm">
+                <!-- Add New Contact Card -->
+                <div class="card shadow-sm mb-4">
                     <div class="card-header bg-white fw-bold">Add New Contact</div>
                     <div class="card-body">
                         <form action="/add-contact-web" method="POST">
@@ -114,6 +115,25 @@
                                 <input type="text" class="form-control" name="group_name" placeholder="e.g. Youth, Choir, Leaders" value="General" required>
                             </div>
                             <button type="submit" class="btn btn-primary w-100">Save Contact</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Upload Contacts from Excel Card -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white fw-bold">📁 Upload Contacts from Excel</div>
+                    <div class="card-body">
+                        <form action="{{ url_for('upload_excel') }}" method="POST" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label class="form-label">Select Excel File (.xlsx, .xls)</label>
+                                <input type="file" name="excel_file" class="form-control" accept=".xlsx, .xls" required>
+                                <div class="form-text" style="font-size: 0.8rem;">Columns: Name, Phone</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Target Group Name</label>
+                                <input type="text" name="group_name" class="form-control" placeholder="e.g. Church Members" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Upload & Import Contacts</button>
                         </form>
                     </div>
                 </div>
