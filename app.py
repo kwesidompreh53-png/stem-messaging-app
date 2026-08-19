@@ -172,7 +172,7 @@ def settings():
 
 @app.route('/purchase-bundle', methods=['GET', 'POST'])
 @login_required
-def purchase_bundle():
+def buy_points():
     if request.method == 'POST':
         bundle_category = request.form.get('bundle_category', 'Voice') # 'Voice' or 'SMS'
         plan_type = request.form.get('plan_type', 'Standard Bundle')
