@@ -265,37 +265,51 @@ def initialize_payment():
 def payment_callback():
     reference = request.args.get('reference')
     if not reference:
-        return redirect(url_for('dashboard'))
+        flash('No transaction reference provided.', 'danger')
+        return redirect(url_for('wallet_history'))
         
     headers = {
         "Authorization": f"Bearer {PAYSTACK_SECRET_KEY}",
     }
     
-    response = requests.get(f"https://api.paystack.co/transaction/verify/{reference}", headers=headers)
-    data = response.json()
-    
-    if data.get('status') and data['data']['status'] == 'success':
-        metadata = data['data'].get('metadata', {})
-        deposit_amount = float(metadata.get('deposit_amount', 0))
+    try:
+        response = requests.get(f"https://api.paystack.co/transaction/verify/{reference}", headers=headers)
+        data = response.json()
         
-        # Check if transaction already recorded to prevent double-crediting on refresh
-        existing_tx = WalletTransaction.query.filter_by(reference=reference).first()
-        if not existing_tx:
-            current_user.balance = (current_user.balance or 0.0) + deposit_amount
+        if data.get('status') and data['data']['status'] == 'success':
+            tx_data = data['data']
             
-            # Save transaction history record
-            new_tx = WalletTransaction(
-                user_id=current_user.id,
-                amount=deposit_amount,
-                reference=reference,
-                status='Success'
-            )
-            db.session.add(new_tx)
-            db.session.commit()
-        
+            # Fallback extraction: check metadata first, otherwise divide Paystack's lowest currency unit by 100
+            metadata = tx_data.get('metadata', {})
+            deposit_amount = float(metadata.get('deposit_amount', 0))
+            if deposit_amount <= 0:
+                deposit_amount = float(tx_data.get('amount', 0)) / 100.0
+            
+            # Check if transaction already recorded to prevent double-crediting on refresh
+            existing_tx = WalletTransaction.query.filter_by(reference=reference).first()
+            if not existing_tx:
+                current_user.balance = (current_user.balance or 0.0) + deposit_amount
+                
+                # Save transaction history record
+                new_tx = WalletTransaction(
+                    user_id=current_user.id,
+                    amount=deposit_amount,
+                    reference=reference,
+                    status='Success'
+                )
+                db.session.add(new_tx)
+                db.session.commit()
+                flash(f'Successfully topped up GHS {deposit_amount:.2f}!', 'success')
+            
+            return redirect(url_for('wallet_history'))
+        else:
+            flash('Payment verification failed or was cancelled.', 'danger')
+            return redirect(url_for('wallet_history'))
+            
+    except Exception as e:
+        app.logger.error(f"Payment verification error: {e}")
+        flash('An error occurred while verifying the payment.', 'danger')
         return redirect(url_for('wallet_history'))
-    
-    return "Payment verification failed or was cancelled. <a href='/dashboard'>Go to Dashboard</a>", 400
 
 @app.route('/')
 @login_required
