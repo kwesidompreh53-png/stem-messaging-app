@@ -1,12 +1,12 @@
-/* Custom Dashboard Theme & Styling */
+/* Custom Dashboard Theme - Church of Pentecost Inspired (Blue, Gold/Yellow, White) */
 body {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     min-height: 100vh;
 }
 
 .navbar {
-    background: linear-gradient(135deg, #1d2671 0%, #c33764 100%) !important;
+    background: linear-gradient(135deg, #0d3b66 0%, #1d6fa5 100%) !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -27,7 +27,7 @@ body {
     background-color: #ffffff;
     border-bottom: 2px solid #f0f2f5;
     font-weight: 700;
-    color: #333333;
+    color: #0d3b66;
     padding: 1rem 1.25rem;
 }
 
@@ -45,17 +45,19 @@ body {
     border-radius: 6px;
 }
 
-/* Custom Buttons with Smooth Gradients */
+/* Custom Buttons with Smooth Gradients Matching CoP Palette */
 .btn-primary {
-    background: linear-gradient(135deg, #1d2671 0%, #c33764 100%);
+    background: linear-gradient(135deg, #0d3b66 0%, #1d6fa5 100%);
     border: none;
     font-weight: 600;
+    color: #ffffff;
     transition: opacity 0.2s ease;
 }
 
 .btn-primary:hover {
     opacity: 0.9;
-    background: linear-gradient(135deg, #1d2671 0%, #c33764 100%);
+    background: linear-gradient(135deg, #0d3b66 0%, #1d6fa5 100%);
+    color: #ffffff;
 }
 
 .btn-success {
@@ -72,16 +74,17 @@ body {
     background: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
     border: none;
     font-weight: 600;
+    color: #1a1a1a;
 }
 
 /* Table Enhancements */
 .table th {
     background-color: #f8f9fa;
-    color: #495057;
+    color: #0d3b66;
     font-weight: 700;
     border-top: none;
 }
 
 .table-hover tbody tr:hover {
-    background-color: rgba(29, 38, 113, 0.04);
+    background-color: rgba(13, 59, 102, 0.04);
 }
