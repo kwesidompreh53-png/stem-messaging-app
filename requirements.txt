@@ -9,3 +9,4 @@ requests==2.34.2
 gunicorn==26.1.0
 psycopg[binary]==3.3.4
 openpyxl==3.1.5
+psycopg2-binary
