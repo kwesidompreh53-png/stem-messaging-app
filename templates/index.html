@@ -111,8 +111,8 @@
                                        placeholder="+233..." required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Group Name</label>
-                                <input type="text" class="form-control" name="group_name" placeholder="e.g. Youth, Choir, Leaders" value="General" required>
+                                <label class="form-label">Ministry Name</label>
+                                <input type="text" class="form-control" name="group_name" placeholder="e.g. Youth, PEMEM, Women's Ministry" value="General" required>
                             </div>
                             <button type="submit" class="btn btn-primary w-100">Save Contact</button>
                         </form>
@@ -130,8 +130,8 @@
                                 <div class="form-text" style="font-size: 0.8rem;">Columns: Name, Phone</div>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Target Group Name</label>
-                                <input type="text" name="group_name" class="form-control" placeholder="e.g. Church Members" required>
+                                <label class="form-label">Target Ministry Name</label>
+                                <input type="text" name="group_name" class="form-control" placeholder="e.g. Youth Ministry" required>
                             </div>
                             <button type="submit" class="btn btn-primary w-100">Upload & Import Contacts</button>
                         </form>
@@ -148,9 +148,9 @@
                         <form action="/send-bulk-web" method="POST">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Target Group Name</label>
+                                    <label class="form-label">Select Ministry</label>
                                     <select class="form-select" name="group_name" required>
-                                        <option value="" disabled selected>Select a group...</option>
+                                        <option value="" disabled selected>Select a ministry...</option>
                                         {% for group in groups %}
                                         <option value="{{ group }}">{{ group }}</option>
                                         {% endfor %}
@@ -184,9 +184,9 @@
                         <form action="/upload-mp3-campaign" method="POST" enctype="multipart/form-data">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Target Group Name</label>
+                                    <label class="form-label">Select Ministry</label>
                                     <select class="form-select" name="recipient_group" required>
-                                        <option value="" disabled selected>Select a group...</option>
+                                        <option value="" disabled selected>Select a ministry...</option>
                                         {% for group in groups %}
                                         <option value="{{ group }}">{{ group }}</option>
                                         {% endfor %}
@@ -221,7 +221,7 @@
                                 <tr>
                                     <th>Name</th>
                                     <th>Phone</th>
-                                    <th>Group</th>
+                                    <th>Ministry</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
