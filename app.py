@@ -185,14 +185,11 @@ def buy_points():
         if amount <= 0:
             return "Amount must be greater than zero. <a href='/purchase-bundle'>Go back</a>", 400
 
-        # Automatic deduction check from main wallet balance
         if current_user.balance < amount:
             return "Insufficient funds in your main wallet! Please top up your wallet first. <a href='/purchase-bundle'>Go back</a>", 400
             
-        # Deduct automatically from main wallet
         current_user.balance -= amount
         
-        # Save bundle purchase history record
         new_bundle = BundleHistory(
             user_id=current_user.id,
             bundle_type=bundle_category,
@@ -202,7 +199,7 @@ def buy_points():
         db.session.add(new_bundle)
         db.session.commit()
         
-        return redirect(url_for('bundle_history'))
+        return redirect(url_for('bundle_history', type=bundle_category.lower()))
 
     return render_template('buy_points.html', balance=current_user.balance)
 
@@ -215,8 +212,11 @@ def wallet_history():
 @app.route('/bundle-history', methods=['GET'])
 @login_required
 def bundle_history():
-    bundles = BundleHistory.query.filter_by(user_id=current_user.id).order_by(BundleHistory.timestamp.desc()).all()
-    return render_template('bundle_history.html', bundles=bundles, balance=current_user.balance)
+    active_type = request.args.get('type', 'voice').lower()
+    query_type = 'Voice' if active_type == 'voice' else 'SMS'
+    
+    bundles = BundleHistory.query.filter_by(user_id=current_user.id, bundle_type=query_type).order_by(BundleHistory.timestamp.desc()).all()
+    return render_template('bundle_history.html', bundles=bundles, balance=current_user.balance, active_type=active_type)
 
 # -----------------------------------
 
@@ -279,18 +279,15 @@ def payment_callback():
         if data.get('status') and data['data']['status'] == 'success':
             tx_data = data['data']
             
-            # Fallback extraction: check metadata first, otherwise divide Paystack's lowest currency unit by 100
             metadata = tx_data.get('metadata', {})
             deposit_amount = float(metadata.get('deposit_amount', 0))
             if deposit_amount <= 0:
                 deposit_amount = float(tx_data.get('amount', 0)) / 100.0
             
-            # Check if transaction already recorded to prevent double-crediting on refresh
             existing_tx = WalletTransaction.query.filter_by(reference=reference).first()
             if not existing_tx:
                 current_user.balance = (current_user.balance or 0.0) + deposit_amount
                 
-                # Save transaction history record
                 new_tx = WalletTransaction(
                     user_id=current_user.id,
                     amount=deposit_amount,
@@ -338,7 +335,6 @@ def add_contact_web():
     db.session.commit()
     return redirect(url_for('dashboard'))
 
-# --- EXCEL CONTACT UPLOAD ROUTE USING OPENPYXL ---
 @app.route('/upload-excel', methods=['POST'])
 @app.route('/upload-contacts-excel', methods=['POST'])
 @login_required
@@ -399,7 +395,6 @@ def upload_contacts_excel():
             
     return "Invalid file format. Please upload an Excel (.xlsx or .xls) file. <a href='/'>Go back</a>", 400
 
-# Alias helper route name for backward compatibility with templates
 app.view_functions['upload_excel'] = upload_contacts_excel
 
 @app.route('/edit-contact/<int:contact_id>', methods=['GET', 'POST'])
@@ -526,7 +521,6 @@ def voice_webhook():
             db.session.commit()
     return '', 200
 
-# Global table creation for Gunicorn/Render compatibility
 with app.app_context():
     db.create_all()
 
