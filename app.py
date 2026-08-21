@@ -562,7 +562,7 @@ def payment_callback():
     }
     
     try:
-        response = requests.get(f"[https://api.paystack.co/transaction/verify/](https://api.paystack.co/transaction/verify/){reference}", headers=headers)
+        response = requests.get(f"https://api.paystack.co/transaction/verify/{reference}", headers=headers)
         data = response.json()
         
         if data.get('status') and data['data']['status'] == 'success':
