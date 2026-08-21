@@ -170,7 +170,13 @@
             <div class="col-md-8">
                 <!-- Bulk Campaign Card -->
                 <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-white fw-bold">Launch Bulk SMS</div>
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center fw-bold">
+                        <span>Launch Bulk SMS</span>
+                        <!-- Button to trigger the Create Template Modal -->
+                        <button type="button" class="btn btn-sm text-white fw-semibold" style="background-color: #f7931e; border-radius: 6px;" data-bs-toggle="modal" data-bs-target="#createTemplateModal">
+                            + Create Template
+                        </button>
+                    </div>
                     <div class="card-body">
                         <form action="/send-bulk-web" method="POST">
                             <div class="row">
@@ -310,6 +316,111 @@
 
     </div>
 
+    <!-- CREATE TEMPLATE MODAL -->
+    <div class="modal fade" id="createTemplateModal" tabindex="-1" aria-labelledby="createTemplateModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+          
+          <!-- Modal Header -->
+          <div class="modal-header border-bottom-0 pb-0 px-4 pt-4">
+            <h5 class="modal-title fw-bold text-dark fs-4" id="createTemplateModalLabel">Create Template</h5>
+            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <form action="/create-template" method="POST">
+            <div class="modal-body px-4 py-3">
+              
+              <!-- Template Type Dropdown -->
+              <div class="mb-3">
+                <select class="form-select text-muted bg-light border-0 py-2" name="template_type" required style="border-radius: 8px;">
+                  <option value="" disabled selected>Template Type</option>
+                  <option value="SMS">SMS Template</option>
+                  <option value="Voice">Voice Template</option>
+                </select>
+              </div>
+
+              <!-- Title Field -->
+              <div class="mb-3">
+                <input type="text" class="form-control bg-light border-0 py-2 text-dark" name="title" placeholder="Title" required style="border-radius: 8px;">
+              </div>
+
+              <!-- Variable Pills / Badges -->
+              <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                <button type="button" class="btn btn-sm btn-light border text-secondary px-2 py-1 font-monospace" style="font-size: 0.8rem; border-radius: 6px;" onclick="insertVariable('{full_name}')">
+                  <span class="text-warning">&lt;&gt;</span> Full Name
+                </button>
+                <button type="button" class="btn btn-sm btn-light border text-secondary px-2 py-1 font-monospace" style="font-size: 0.8rem; border-radius: 6px;" onclick="insertVariable('{first_name}')">
+                  <span class="text-warning">&lt;&gt;</span> First Name
+                </button>
+                <button type="button" class="btn btn-sm btn-light border text-secondary px-2 py-1 font-monospace" style="font-size: 0.8rem; border-radius: 6px;" onclick="insertVariable('{last_name}')">
+                  <span class="text-warning">&lt;&gt;</span> Last Name
+                </button>
+              </div>
+
+              <!-- Message Textarea -->
+              <div class="mb-3">
+                <textarea class="form-control bg-light border-0 p-3" id="templateBody" name="body" rows="5" placeholder="Type your message here. Hint: Use / or right click to insert variables" style="border-radius: 8px; resize: none;" oninput="updateStats(this)"></textarea>
+              </div>
+
+              <!-- Character Counter & Settings Bar -->
+              <div class="d-flex justify-content-between align-items-center text-muted small px-1">
+                <div class="d-flex align-items-center gap-4">
+                  <span id="charCount">0 Characters</span>
+                  <span id="msgCount">1 message per recipient</span>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                  <span>Encoding: <span class="badge bg-success text-white fw-normal" style="font-size: 0.75rem;">GSM</span></span>
+                  <div class="form-check form-switch m-0 d-flex align-items-center gap-1 ps-0">
+                    <label class="form-check-label mb-0 me-2" for="lineBreaksToggle" style="font-size: 0.85rem;">Line breaks</label>
+                    <input class="form-check-input ms-0" type="checkbox" role="switch" id="lineBreaksToggle" checked style="cursor: pointer; background-color: #f7931e; border-color: #f7931e;">
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer border-top-0 px-4 pb-4 pt-2 d-flex justify-content-between align-items-center">
+              
+              <!-- Left Action Icons -->
+              <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-light border-0 p-2 text-muted" style="border-radius: 8px;" title="Help">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                    <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343.1.916-.388.196-1.146.572-1.146 1.355V9.32a.246.246 0 0 0 .246.246h.81c.137 0 .246-.108.246-.242v-.54c0-1.053 3.5-1.117 3.5-3.483 0-1.79-1.295-2.706-3.01-2.706-1.83 0-3.051 1.05-3.187 2.59zM8 11.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                  </svg>
+                </button>
+                <button type="button" class="btn btn-light border-0 p-2 text-muted" style="border-radius: 8px;" title="Preview">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                  </svg>
+                </button>
+                <button type="button" class="btn btn-light border-0 p-2 text-muted" style="border-radius: 8px;" title="Translate">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-translate" viewBox="0 0 16 16">
+                    <path d="M4.545 6.714 4.11 8H3l1.862-5h1.284L8 8H6.833l-.435-1.286H4.545zm1.634-.736L5.5 3.956h-.033l-.679 2.022H6.18z"/>
+                    <path d="M0 2a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v3h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-3H2a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2zm7.138 9.959c.09-.359.197-.772.318-1.203.11-.41.218-.813.322-1.206H10.5V8.5h-2v-.935h2.518c.11-.424.218-.842.324-1.256h.912c.106.414.214.832.324 1.256H16V8.5h-2v.935h-1.382c-.104.393-.212.796-.322 1.206-.121.431-.228.844-.318 1.203h-1.04z"/>
+                  </svg>
+                </button>
+                <button type="button" class="btn btn-light border p-2 text-primary shadow-sm" style="border-radius: 8px; background: linear-gradient(135deg, #f3e8ff 0%, #e0e7ff 100%);" title="AI Magic">
+                  ✨
+                </button>
+              </div>
+
+              <!-- Right Action Buttons -->
+              <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-light text-secondary px-4 fw-semibold border" data-bs-dismiss="modal" style="border-radius: 8px;">Cancel</button>
+                <button type="submit" class="btn text-white px-4 fw-semibold shadow-sm" style="background-color: #f7931e; border-radius: 8px;">Save</button>
+              </div>
+
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- JavaScript Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function toggleMenu(event) {
             event.stopPropagation();
@@ -326,6 +437,25 @@
                     }
                 }
             }
+        }
+
+        // Modal Helper Functions
+        function insertVariable(variableText) {
+            const textarea = document.getElementById('templateBody');
+            const startPos = textarea.selectionStart;
+            const endPos = textarea.selectionEnd;
+            textarea.value = textarea.value.substring(0, startPos) + variableText + textarea.value.substring(endPos);
+            textarea.focus();
+            textarea.selectionStart = startPos + variableText.length;
+            textarea.selectionEnd = startPos + variableText.length;
+            updateStats(textarea);
+        }
+
+        function updateStats(textarea) {
+            const length = textarea.value.length;
+            document.getElementById('charCount').innerText = `${length} Character${length === 1 ? '' : 's'}`;
+            const messages = Math.ceil(length / 160) || 1;
+            document.getElementById('msgCount').innerText = `${messages} message${messages === 1 ? '' : 's'} per recipient`;
         }
     </script>
 </body>
