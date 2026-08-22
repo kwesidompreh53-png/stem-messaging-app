@@ -74,10 +74,20 @@
                 DANSOMAN DISTRICT ENGLISH ASSEMBLY DASHBOARD
             </span>
             
-            <!-- Right side: Wallet & Menu -->
-            <div class="d-flex align-items-center ms-auto">
+            <!-- Right side: Voice, SMS, Wallet & Menu -->
+            <div class="d-flex align-items-center ms-auto gap-2">
+                <!-- Voice Purchased Badge -->
+                <span class="badge bg-info text-dark fw-bold px-2 py-2 fs-6">
+                    📞 Voice: {{ voice_total }}
+                </span>
+
+                <!-- SMS Purchased Badge -->
+                <span class="badge bg-success text-white fw-bold px-2 py-2 fs-6">
+                    💬 SMS: {{ sms_total }}
+                </span>
+
                 <!-- Points Balance Badge -->
-                <a href="{{ url_for('buy_points') }}" class="btn btn-warning btn-sm me-3 fw-bold text-dark">
+                <a href="{{ url_for('buy_points') }}" class="btn btn-warning btn-sm fw-bold text-dark ms-1">
                     ⚡ Wallet: {{ current_user.balance }}
                 </a>
 

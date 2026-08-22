@@ -331,6 +331,7 @@ def payment_callback():
         flash('An error occurred while verifying the payment.', 'danger')
         return redirect(url_for('wallet_history'))
 
+
 @app.route('/')
 @login_required
 def dashboard():
@@ -339,7 +340,12 @@ def dashboard():
     templates = Template.query.filter_by(user_id=current_user.id).order_by(Template.updated_at.desc()).all()
     groups = db.session.query(Contact.group_name.distinct()).all()
     group_list = [g[0] for g in groups if g[0]]
-    return render_template('index.html', contacts=contacts, logs=logs, templates=templates, groups=group_list, balance=current_user.balance)
+    
+    # Calculate total voice and SMS plans/points purchased
+    voice_total = db.session.query(db.func.sum(BundleHistory.cost)).filter_by(user_id=current_user.id, bundle_type='Voice').scalar() or 0.0
+    sms_total = db.session.query(db.func.sum(BundleHistory.cost)).filter_by(user_id=current_user.id, bundle_type='SMS').scalar() or 0.0
+
+    return render_template('index.html', contacts=contacts, logs=logs, templates=templates, groups=group_list, balance=current_user.balance, voice_total=voice_total, sms_total=sms_total)
 
 @app.route('/add-contact-web', methods=['POST'])
 @login_required
