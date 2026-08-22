@@ -336,7 +336,7 @@ def payment_callback():
 def dashboard():
     contacts = Contact.query.all()
     logs = MessageLog.query.all()
-    templates = Template.query.filter_by(user_id=current_user.id).order_by(Template.updated_at.desc()).all()["cite": 3]
+    templates = Template.query.filter_by(user_id=current_user.id).order_by(Template.updated_at.desc()).all()
     groups = db.session.query(Contact.group_name.distinct()).all()
     group_list = [g[0] for g in groups if g[0]]
     return render_template('index.html', contacts=contacts, logs=logs, templates=templates, groups=group_list, balance=current_user.balance)
