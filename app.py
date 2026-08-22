@@ -568,6 +568,35 @@ def create_template():
     flash('Template created successfully!', 'success')
     return redirect(url_for('dashboard'))
 
+@app.route('/delete-template/<int:template_id>', methods=['POST'])
+@login_required
+def delete_template(template_id):
+    template = Template.query.get_or_404(template_id)
+    if template.user_id != current_user.id:
+        flash('Unauthorized action!', 'danger')
+        return redirect(url_for('dashboard'))
+        
+    db.session.delete(template)
+    db.session.commit()
+    flash('Template deleted successfully!', 'success')
+    return redirect(url_for('dashboard'))
+
+@app.route('/edit-template/<int:template_id>', methods=['POST'])
+@login_required
+def edit_template(template_id):
+    template = Template.query.get_or_404(template_id)
+    if template.user_id != current_user.id:
+        flash('Unauthorized action!', 'danger')
+        return redirect(url_for('dashboard'))
+        
+    template.title = request.form.get('title', template.title)
+    template.body = request.form.get('body', template.body)
+    template.template_type = request.form.get('template_type', template.template_type)
+    
+    db.session.commit()
+    flash('Template updated successfully!', 'success')
+    return redirect(url_for('dashboard'))
+
 with app.app_context():
     db.create_all()
 
