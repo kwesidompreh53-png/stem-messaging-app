@@ -60,7 +60,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
-    balance = db.Column(db.Float, default=0.0)  # Main Wallet balance holding deposited money
+    balance = db.Column(db.Float, default=0.0)  # Main Wallet balance holding deposited money[cite: 3]
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -89,8 +89,8 @@ class WalletTransaction(db.Model):
 class BundleHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    bundle_type = db.Column(db.String(20), nullable=False)  # 'Voice' or 'SMS'
-    plan_type = db.Column(db.String(100), nullable=False)   # e.g., 'Custom SMS', 'Voice Pro GHS 50'
+    bundle_type = db.Column(db.String(20), nullable=False)  # 'Voice' or 'SMS'[cite: 3]
+    plan_type = db.Column(db.String(100), nullable=False)   # e.g., 'Custom SMS', 'Voice Pro GHS 50'[cite: 3]
     cost = db.Column(db.Float, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -101,6 +101,14 @@ class MessageLog(db.Model):
     status = db.Column(db.String(30), default='Pending')
     channel = db.Column(db.String(20), default='SMS')
     provider_sid = db.Column(db.String(100), nullable=True)
+
+class Template(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    template_type = db.Column(db.String(50), nullable=False)  # e.g., 'SMS Template'[cite: 3]
+    title = db.Column(db.String(100), nullable=False)
+    body = db.Column(db.Text, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -174,7 +182,7 @@ def settings():
 @login_required
 def buy_points():
     if request.method == 'POST':
-        bundle_category = request.form.get('bundle_category', 'Voice') # 'Voice' or 'SMS'
+        bundle_category = request.form.get('bundle_category', 'Voice') # 'Voice' or 'SMS'[cite: 3]
         plan_type = request.form.get('plan_type', 'Standard Bundle')
         
         try:
@@ -328,9 +336,10 @@ def payment_callback():
 def dashboard():
     contacts = Contact.query.all()
     logs = MessageLog.query.all()
+    templates = Template.query.filter_by(user_id=current_user.id).order_by(Template.updated_at.desc()).all()["cite": 3]
     groups = db.session.query(Contact.group_name.distinct()).all()
     group_list = [g[0] for g in groups if g[0]]
-    return render_template('index.html', contacts=contacts, logs=logs, groups=group_list, balance=current_user.balance)
+    return render_template('index.html', contacts=contacts, logs=logs, templates=templates, groups=group_list, balance=current_user.balance)
 
 @app.route('/add-contact-web', methods=['POST'])
 @login_required
@@ -536,21 +545,28 @@ def voice_webhook():
             db.session.commit()
     return '', 200
 
-@app.route('/')
-def index():
-    # your existing index code...
-    return render_template('index.html', ...)
-
-# --- ADD THE NEW ROUTE HERE ---
 @app.route('/create-template', methods=['POST'])
+@login_required
 def create_template():
-    # Retrieve form data
-    template_type = request.form.get('template_type')
-    title = request.form.get('title')
-    body = request.form.get('body')
+    template_type = request.form.get('template_type', 'SMS Template')
+    title = request.form.get('title', '')
+    body = request.form.get('body', '')
+    
+    if not title or not body:
+        flash('Title and body cannot be empty!', 'danger')
+        return redirect(url_for('dashboard'))
+        
+    new_template = Template(
+        user_id=current_user.id,  # Fixed: Links template directly to the logged-in user[cite: 3]
+        template_type=template_type,
+        title=title,
+        body=body
+    )
+    db.session.add(new_template)
+    db.session.commit()
     
     flash('Template created successfully!', 'success')
-    return redirect(url_for('index'))
+    return redirect(url_for('dashboard'))
 
 with app.app_context():
     db.create_all()
