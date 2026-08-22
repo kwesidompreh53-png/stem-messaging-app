@@ -536,6 +536,22 @@ def voice_webhook():
             db.session.commit()
     return '', 200
 
+@app.route('/')
+def index():
+    # your existing index code...
+    return render_template('index.html', ...)
+
+# --- ADD THE NEW ROUTE HERE ---
+@app.route('/create-template', methods=['POST'])
+def create_template():
+    # Retrieve form data
+    template_type = request.form.get('template_type')
+    title = request.form.get('title')
+    body = request.form.get('body')
+    
+    flash('Template created successfully!', 'success')
+    return redirect(url_for('index'))
+
 with app.app_context():
     db.create_all()
 
