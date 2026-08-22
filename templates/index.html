@@ -314,6 +314,70 @@
             </div>
         </div>
 
+        <!-- Row 3: Saved Message Templates Table -->
+        <div class="row g-4 mt-2">
+            <div class="col-12">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
+                        <span>Saved Message Templates</span>
+                        <div class="input-group input-group-sm" style="width: 220px;">
+                            <input type="text" id="templateSearch" class="form-control" placeholder="Search..." onkeyup="filterTemplates()">
+                        </div>
+                    </div>
+                    <div class="card-body table-responsive p-0">
+                        <table class="table table-hover align-middle mb-0" id="templatesTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-3">Title</th>
+                                    <th>Content</th>
+                                    <th>Message Type</th>
+                                    <th>Updated At</th>
+                                    <th class="text-end pe-3">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for template in templates %}
+                                <tr>
+                                    <td class="ps-3 fw-semibold text-dark">{{ template.title }}</td>
+                                    <td class="text-muted text-truncate" style="max-width: 250px;">{{ template.body }}</td>
+                                    <td>
+                                        <span class="badge bg-info bg-opacity-10 text-info px-2 py-1 fw-normal" style="font-size: 0.8rem;">
+                                            {{ template.template_type }}
+                                        </span>
+                                    </td>
+                                    <td class="text-muted small">
+                                        {% if template.updated_at %}
+                                            {{ template.updated_at.strftime('%b %d, %Y, %I:%M:%S %p') }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end pe-3">
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-light border-0 text-secondary fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 18px; line-height: 1;">
+                                                &#8942;
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border">
+                                                <li><a class="dropdown-item" href="#">Use Template</a></li>
+                                                <li><a class="dropdown-item" href="#">Edit</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="#">Delete</a></li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-4">No message templates found. Click "+ Create Template" to add one.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <!-- CREATE TEMPLATE MODAL -->
@@ -456,6 +520,27 @@
             document.getElementById('charCount').innerText = `${length} Character${length === 1 ? '' : 's'}`;
             const messages = Math.ceil(length / 160) || 1;
             document.getElementById('msgCount').innerText = `${messages} message${messages === 1 ? '' : 's'} per recipient`;
+        }
+
+        // Search Filter for Templates Table
+        function filterTemplates() {
+            const input = document.getElementById('templateSearch');
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById('templatesTable');
+            const trs = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < trs.length; i++) {
+                const tds = trs[i].getElementsByTagName('td');
+                if (tds.length > 1) {
+                    const titleText = tds[0].textContent || tds[0].innerText;
+                    const contentText = tds[1].textContent || tds[1].innerText;
+                    if (titleText.toLowerCase().indexOf(filter) > -1 || contentText.toLowerCase().indexOf(filter) > -1) {
+                        trs[i].style.display = "";
+                    } else {
+                        trs[i].style.display = "none";
+                    }
+                }
+            }
         }
     </script>
 </body>
