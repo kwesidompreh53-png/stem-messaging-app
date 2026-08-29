@@ -5,6 +5,16 @@ body {
     min-height: 100vh;
 }
 
+/* Dashboard Background with Image Watermark/Overlay */
+.dashboard-bg {
+    background-image: linear-gradient(rgba(245, 247, 250, 0.92), rgba(245, 247, 250, 0.92)), url("image/Pentecost_bg.jpg");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+}
+
 .navbar {
     background: linear-gradient(135deg, #0d3b66 0%, #1d6fa5 100%) !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
