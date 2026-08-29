@@ -1,42 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Platform Settings - STE-M</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+{% extends "base.html" %}
 
-    <nav class="navbar navbar-dark bg-primary shadow-sm">
+{% block title %}Platform Settings - DANSOMAN DISTRICT ENGLISH ASSEMBLY DASHBOARD{% endblock %}
+
+{% block content %}
+    <nav class="navbar navbar-dark bg-primary shadow-sm rounded mb-4">
         <div class="container-fluid">
-            <span class="navbar-brand mb-0 h1">Platform Settings</span>
-            <a href="{{ url_for('dashboard') }}" class="btn btn-light btn-sm">Back to Dashboard</a>
+            <span class="navbar-brand mb-0 h1">DANSOMAN DISTRICT ENGLISH ASSEMBLY DASHBOARD - Platform Settings</span>[cite: 9]
+            <a href="{{ url_for('dashboard') }}" class="btn btn-light btn-sm">Back to Dashboard</a>[cite: 9]
         </div>
     </nav>
 
     <div class="container my-5" style="max-width: 600px;">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white fw-bold">System Preferences</div>
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white fw-bold text-dark">System Preferences</div>[cite: 9]
             <div class="card-body">
-                <form action="/settings" method="POST">
+                <form action="/settings" method="POST">[cite: 9]
                     <div class="mb-3">
-                        <label class="form-label">Default Sender ID / Name</label>
-                        <input type="text" class="form-control" name="default_sender" value="STE-M" required>
+                        <label class="form-label text-dark">Default Sender ID / Name</label>[cite: 9]
+                        <input type="text" class="form-control" name="default_sender" value="STE-M" required>[cite: 9]
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Maximum Campaign Retries</label>
-                        <input type="number" class="form-control" name="max_retry" value="3" min="1" max="5" required>
+                        <label class="form-label text-dark">Maximum Campaign Retries</label>[cite: 9]
+                        <input type="number" class="form-control" name="max_retry" value="3" min="1" max="5" required>[cite: 9]
                     </div>
                     <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="emailAlerts" checked>
-                        <label class="form-check-label" for="emailAlerts">Enable Email Notifications for Bulk Deliveries</label>
+                        <input type="checkbox" class="form-check-input" id="emailAlerts" checked>[cite: 9]
+                        <label class="form-check-label text-dark" for="emailAlerts">Enable Email Notifications for Bulk Deliveries</label>[cite: 9]
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+                    <button type="submit" class="btn btn-primary w-100">Save Changes</button>[cite: 9]
                 </form>
             </div>
         </div>
     </div>
-
-</body>
-</html>
+{% endblock %}
+```[cite: 9]

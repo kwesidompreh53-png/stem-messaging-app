@@ -1,14 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Purchase Bundle - DANSOMAN DISTRICT ENGLISH ASSEMBLY DASHBOARD</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+{% extends "base.html" %}
+
+{% block title %}Purchase Bundle - DANSOMAN DISTRICT ENGLISH ASSEMBLY DASHBOARD{% endblock %}
+
+{% block content %}
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm rounded">
         <div class="container-fluid position-relative d-flex justify-content-between align-items-center">
             
             <!-- Left spacing placeholder to help keep title centered -->
@@ -21,9 +17,9 @@
             
             <!-- Right side: Wallet & Links -->
             <div class="d-flex align-items-center ms-auto">
-                <span class="nav-item nav-link text-warning fw-bold me-3">Wallet Balance: GHS {{ "%.2f"|format(balance) }}</span>
-                <a class="btn btn-outline-light btn-sm me-2" href="{{ url_for('dashboard') }}">Dashboard</a>
-                <a class="btn btn-danger btn-sm" href="{{ url_for('logout') }}">Logout</a>
+                <span class="nav-item nav-link text-warning fw-bold me-3">Wallet Balance: GHS {{ "%.2f"|format(balance) }}</span>[cite: 7]
+                <a class="btn btn-outline-light btn-sm me-2" href="{{ url_for('dashboard') }}">Dashboard</a>[cite: 7]
+                <a class="btn btn-danger btn-sm" href="{{ url_for('logout') }}">Logout</a>[cite: 7]
             </div>
         </div>
     </nav>
@@ -33,17 +29,17 @@
         <div class="row justify-content-center mb-4">
             <div class="col-md-8">
                 <div class="btn-group w-100 shadow-sm" role="group">
-                    <a href="{{ url_for('buy_points') }}" class="btn btn-warning fw-bold">Purchase Bundle</a>
-                    <a href="{{ url_for('wallet_history') }}" class="btn btn-outline-secondary">Wallet History</a>
-                    <a href="{{ url_for('bundle_history') }}" class="btn btn-outline-secondary">Bundle History</a>
+                    <a href="{{ url_for('buy_points') }}" class="btn btn-warning fw-bold">Purchase Bundle</a>[cite: 7]
+                    <a href="{{ url_for('wallet_history') }}" class="btn btn-outline-secondary">Wallet History</a>[cite: 7]
+                    <a href="{{ url_for('bundle_history') }}" class="btn btn-outline-secondary">Bundle History</a>[cite: 7]
                 </div>
             </div>
         </div>
 
         <div class="row justify-content-center mb-4">
             <div class="col-md-8 text-center">
-                <h2>Purchase Voice & SMS Bundles</h2>
-                <p class="text-muted">Select a plan below to instantly deduct from your wallet balance and purchase.</p>
+                <h2>Purchase Voice & SMS Bundles</h2>[cite: 7]
+                <p class="text-muted">Select a plan below to instantly deduct from your wallet balance and purchase.</p>[cite: 7]
             </div>
         </div>
 
@@ -66,14 +62,14 @@
                 <div class="card h-100 shadow-sm border-0">
                     <div class="card-body text-center d-flex flex-column justify-content-between">
                         <div>
-                            <h5 class="card-title text-secondary">{{ plan.title }}</h5>
-                            <h3 class="text-primary fw-bold my-3">GHS {{ "%.2f"|format(plan.amount) }}</h3>
+                            <h5 class="card-title text-secondary">{{ plan.title }}</h5>[cite: 7]
+                            <h3 class="text-primary fw-bold my-3">GHS {{ "%.2f"|format(plan.amount) }}</h3>[cite: 7]
                         </div>
                         <form action="{{ url_for('buy_points') }}" method="POST">
-                            <input type="hidden" name="amount" value="{{ plan.amount }}">
-                            <input type="hidden" name="bundle_category" value="{{ plan.type }}">
-                            <input type="hidden" name="plan_type" value="{{ plan.title }} (GHS {{ plan.amount }})">
-                            <button type="submit" class="btn btn-primary w-100">Choose Plan</button>
+                            <input type="hidden" name="amount" value="{{ plan.amount }}">[cite: 7]
+                            <input type="hidden" name="bundle_category" value="{{ plan.type }}">[cite: 7]
+                            <input type="hidden" name="plan_type" value="{{ plan.title }} (GHS {{ plan.amount }})">[cite: 7]
+                            <button type="submit" class="btn btn-primary w-100">Choose Plan</button>[cite: 7]
                         </form>
                     </div>
                 </div>
@@ -85,25 +81,25 @@
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card shadow-sm border-0 p-4">
-                    <h4 class="mb-3 text-center">Custom Bundle Amount</h4>
+                    <h4 class="mb-3 text-center">Custom Bundle Amount</h4>[cite: 7]
                     <form action="{{ url_for('buy_points') }}" method="POST">
                         <div class="mb-3">
-                            <label for="amount" class="form-label">Enter Custom Amount (GHS)</label>
-                            <input type="number" step="0.01" class="form-control" id="amount" name="amount" placeholder="e.g. 75" required>
+                            <label for="amount" class="form-label">Enter Custom Amount (GHS)</label>[cite: 7]
+                            <input type="number" step="0.01" class="form-control" id="amount" name="amount" placeholder="e.g. 75" required>[cite: 7]
                         </div>
                         <div class="mb-3">
-                            <label for="bundle_category" class="form-label">Category</label>
+                            <label for="bundle_category" class="form-label">Category</label>[cite: 7]
                             <select class="form-select" id="bundle_category" name="bundle_category">
-                                <option value="Voice">Voice Call Bundle</option>
-                                <option value="SMS">SMS Bundle</option>
+                                <option value="Voice">Voice Call Bundle</option>[cite: 7]
+                                <option value="SMS">SMS Bundle</option>[cite: 7]
                             </select>
                         </div>
-                        <input type="hidden" name="plan_type" value="Custom Bundle">
-                        <button type="submit" class="btn btn-success w-100">Purchase Custom Plan</button>
+                        <input type="hidden" name="plan_type" value="Custom Bundle">[cite: 7]
+                        <button type="submit" class="btn btn-success w-100">Purchase Custom Plan</button>[cite: 7]
                     </form>
                 </div>
             </div>
         </div>
     </div>
-</body>
-</html>
+{% endblock %}
+```[cite: 7]
