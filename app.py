@@ -603,8 +603,7 @@ def edit_template(template_id):
     flash('Template updated successfully!', 'success')
     return redirect(url_for('dashboard'))
 
-with app.app_context():
-    db.create_all()
-
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
