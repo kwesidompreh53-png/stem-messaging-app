@@ -326,9 +326,9 @@
                             <input type="text" id="templateSearch" class="form-control" placeholder="Search..." onkeyup="filterTemplates()">
                         </div>
                     </div>
-                    <div class="card-body table-responsive p-0">
+                    <div class="card-body table-responsive p-0" style="max-height: 350px; overflow-y: auto;">
                         <table class="table table-hover align-middle mb-0" id="templatesTable">
-                            <thead class="table-light">
+                            <thead class="table-light sticky-top">
                                 <tr>
                                     <th class="ps-3 py-3">Title</th>
                                     <th class="py-3">Content</th>
@@ -337,14 +337,14 @@
                                     <th class="text-end pe-3 py-3">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody style="min-height: 250px;">
+                            <tbody>
                                 {% if templates %}
                                     {% for template in templates %}
                                     <tr>
                                         <td class="ps-3 fw-semibold text-dark py-3">{{ template.title }}</td>
                                         <td class="text-muted text-truncate py-3" style="max-width: 250px;">{{ template.body }}</td>
                                         <td class="py-3">
-                                            <span class="badge bg-info bg-opacity-10 text-info px-2 py-1 fw-normal" style="font-size: 0.8rem;">
+                                            <span class="badge px-2 py-1 fw-normal" style="background-color: #e0f2fe; color: #0284c7; font-size: 0.8rem;">
                                                 {{ template.template_type }}
                                             </span>
                                         </td>
@@ -362,8 +362,8 @@
                                                 </button>
                                                 <ul class="dropdown-menu dropdown-menu-end shadow-sm border">
                                                     <li>
-                                                        <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#useTemplateModal{{ template.id }}">
-                                                            Use Template
+                                                        <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editTemplateModal{{ template.id }}">
+                                                            Edit
                                                         </button>
                                                     </li>
                                                     <li><hr class="dropdown-divider"></li>

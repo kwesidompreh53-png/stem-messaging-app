@@ -28,7 +28,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['CELERY_BROKER_URL'] = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
 app.config['CELERY_RESULT_BACKEND'] = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
 
-# Paystack Secret Key
 PAYSTACK_SECRET_KEY = os.environ.get('PAYSTACK_SECRET_KEY')
 
 db = SQLAlchemy(app)
@@ -60,7 +59,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
-    balance = db.Column(db.Float, default=0.0)  # Main Wallet balance holding deposited money[cite: 3]
+    balance = db.Column(db.Float, default=0.0)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -89,8 +88,8 @@ class WalletTransaction(db.Model):
 class BundleHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    bundle_type = db.Column(db.String(20), nullable=False)  # 'Voice' or 'SMS'[cite: 3]
-    plan_type = db.Column(db.String(100), nullable=False)   # e.g., 'Custom SMS', 'Voice Pro GHS 50'[cite: 3]
+    bundle_type = db.Column(db.String(20), nullable=False)
+    plan_type = db.Column(db.String(100), nullable=False)
     cost = db.Column(db.Float, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -105,7 +104,7 @@ class MessageLog(db.Model):
 class Template(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    template_type = db.Column(db.String(50), nullable=False)  # e.g., 'SMS Template'[cite: 3]
+    template_type = db.Column(db.String(50), nullable=False)
     title = db.Column(db.String(100), nullable=False)
     body = db.Column(db.Text, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -171,18 +170,14 @@ def profile():
 @login_required
 def settings():
     if request.method == 'POST':
-        default_sender = request.form.get('default_sender', 'STE-M')
-        max_retry = request.form.get('max_retry', '3')
         return redirect(url_for('settings'))
     return render_template('settings.html')
-
-# --- Wallet & Bundle Menu Routes ---
 
 @app.route('/purchase-bundle', methods=['GET', 'POST'])
 @login_required
 def buy_points():
     if request.method == 'POST':
-        bundle_category = request.form.get('bundle_category', 'Voice') # 'Voice' or 'SMS'[cite: 3]
+        bundle_category = request.form.get('bundle_category', 'Voice')
         plan_type = request.form.get('plan_type', 'Standard Bundle')
         
         try:
@@ -194,7 +189,7 @@ def buy_points():
             return "Amount must be greater than zero. <a href='/purchase-bundle'>Go back</a>", 400
 
         if current_user.balance < amount:
-            return "Insufficient funds in your main wallet! Please top up your wallet first. <a href='/top-up'>Top Up Now</a>", 400
+            return "Insufficient funds in your main wallet! <a href='/top-up'>Top Up Now</a>", 400
             
         current_user.balance -= amount
         
@@ -226,8 +221,6 @@ def bundle_history():
     bundles = BundleHistory.query.filter_by(user_id=current_user.id, bundle_type=query_type).order_by(BundleHistory.timestamp.desc()).all()
     return render_template('bundle_history.html', bundles=bundles, balance=current_user.balance, active_type=active_type)
 
-# --- Paystack Top-Up Integration Routes ---
-
 @app.route('/top-up', methods=['GET', 'POST'])
 @login_required
 def top_up():
@@ -244,7 +237,6 @@ def top_up():
             
         phone_number = request.form.get('phone_number', '')
         network = request.form.get('network', 'MTN')
-        
         amount_in_pesewas = int(amount * 100)
         
         headers = {
@@ -269,11 +261,9 @@ def top_up():
         data = response.json()
         
         if data.get('status'):
-            authorization_url = data['data']['authorization_url']
-            return redirect(authorization_url)
+            return redirect(data['data']['authorization_url'])
         else:
-            error_msg = data.get('message', 'Unknown error')
-            flash(f'Payment initialization failed: {error_msg}', 'danger')
+            flash(f"Payment initialization failed: {data.get('message', 'Unknown error')}", 'danger')
             return redirect(url_for('top_up'))
             
     return render_template('top_up.html', balance=current_user.balance)
@@ -291,9 +281,7 @@ def payment_callback():
         flash('No transaction reference provided.', 'danger')
         return redirect(url_for('wallet_history'))
         
-    headers = {
-        "Authorization": f"Bearer {PAYSTACK_SECRET_KEY}",
-    }
+    headers = {"Authorization": f"Bearer {PAYSTACK_SECRET_KEY}"}
     
     try:
         response = requests.get(f"https://api.paystack.co/transaction/verify/{reference}", headers=headers)
@@ -301,7 +289,6 @@ def payment_callback():
         
         if data.get('status') and data['data']['status'] == 'success':
             tx_data = data['data']
-            
             metadata = tx_data.get('metadata', {})
             deposit_amount = float(metadata.get('deposit_amount', 0))
             if deposit_amount <= 0:
@@ -310,7 +297,6 @@ def payment_callback():
             existing_tx = WalletTransaction.query.filter_by(reference=reference).first()
             if not existing_tx:
                 current_user.balance = (current_user.balance or 0.0) + deposit_amount
-                
                 new_tx = WalletTransaction(
                     user_id=current_user.id,
                     amount=deposit_amount,
@@ -331,7 +317,6 @@ def payment_callback():
         flash('An error occurred while verifying the payment.', 'danger')
         return redirect(url_for('wallet_history'))
 
-
 @app.route('/')
 @login_required
 def dashboard():
@@ -341,7 +326,6 @@ def dashboard():
     groups = db.session.query(Contact.group_name.distinct()).all()
     group_list = [g[0] for g in groups if g[0]]
     
-    # Calculate total voice and SMS plans/points purchased
     voice_total = db.session.query(db.func.sum(BundleHistory.cost)).filter_by(user_id=current_user.id, bundle_type='Voice').scalar() or 0.0
     sms_total = db.session.query(db.func.sum(BundleHistory.cost)).filter_by(user_id=current_user.id, bundle_type='SMS').scalar() or 0.0
 
@@ -386,7 +370,6 @@ def upload_contacts_excel():
         try:
             wb = openpyxl.load_workbook(filepath, data_only=True)
             sheet = wb.active
-            
             header_row = [str(cell.value).strip().lower() for cell in sheet[1]]
             
             name_idx = next((i for i, h in enumerate(header_row) if h and ('name' in h or 'student' in h)), None)
@@ -397,25 +380,18 @@ def upload_contacts_excel():
                     os.remove(filepath)
                 return "Error: Excel file must contain header columns for 'Name' and 'Phone'! <a href='/'>Go back</a>", 400
                 
-            count = 0
             for row in sheet.iter_rows(min_row=2, values_only=True):
                 if len(row) > max(name_idx, phone_idx):
                     name = str(row[name_idx]).strip() if row[name_idx] is not None else ''
                     phone = str(row[phone_idx]).strip() if row[phone_idx] is not None else ''
-                    
                     if phone.endswith('.0'):
                         phone = phone[:-2]
-                        
                     if name and phone and name.lower() != 'none' and phone.lower() != 'none':
-                        new_contact = Contact(name=name, phone_number=phone, group_name=group_name)
-                        db.session.add(new_contact)
-                        count += 1
+                        db.session.add(Contact(name=name, phone_number=phone, group_name=group_name))
                         
             db.session.commit()
-            
             if os.path.exists(filepath):
                 os.remove(filepath)
-                
             return redirect(url_for('dashboard'))
             
         except Exception as e:
@@ -423,7 +399,7 @@ def upload_contacts_excel():
                 os.remove(filepath)
             return f"Error processing Excel sheet: {str(e)} <a href='/'>Go back</a>", 400
             
-    return "Invalid file format. Please upload an Excel (.xlsx or .xls) file. <a href='/'>Go back</a>", 400
+    return "Invalid file format. <a href='/'>Go back</a>", 400
 
 app.view_functions['upload_excel'] = upload_contacts_excel
 
@@ -478,27 +454,23 @@ def send_bulk_campaign(group_name, message_text, channel):
     for contact in contacts:
         tracking_sid = f"SID_{uuid.uuid4().hex[:12]}"
         if channel.upper() == 'SMS':
-            log = MessageLog(recipient=contact.phone_number, message_body=message_text, status='Sent (Queued)', channel='SMS', provider_sid=tracking_sid)
-            db.session.add(log)
+            db.session.add(MessageLog(recipient=contact.phone_number, message_body=message_text, status='Sent (Queued)', channel='SMS', provider_sid=tracking_sid))
         elif channel.upper() == 'VOICE':
             tts = gTTS(text=message_text, lang='en', slow=False)
             os.makedirs('static', exist_ok=True)
-            audio_filename = f"voice_{contact.phone_number.replace('+', '')}.mp3"
-            tts.save(os.path.join('static', audio_filename))
-            log = MessageLog(recipient=contact.phone_number, message_body=message_text, status='Call Initiated', channel='Voice', provider_sid=tracking_sid)
-            db.session.add(log)
+            tts.save(os.path.join('static', f"voice_{contact.phone_number.replace('+', '')}.mp3"))
+            db.session.add(MessageLog(recipient=contact.phone_number, message_body=message_text, status='Call Initiated', channel='Voice', provider_sid=tracking_sid))
     db.session.commit()
     return f"Bulk campaign completed for group: {group_name}"
 
 @celery.task(name='app.send_mp3_campaign')
 def send_mp3_campaign(recipient_group, filename):
     contacts = Contact.query.filter_by(group_name=recipient_group).all()
+    tracking_sid = f"SID_{uuid.uuid4().hex[:12]}"
     if not contacts:
-        tracking_sid = f"SID_{uuid.uuid4().hex[:12]}"
         db.session.add(MessageLog(recipient=recipient_group, message_body=f"[Uploaded MP3: {filename}]", status='MP3 Ready', channel='Voice (MP3)', provider_sid=tracking_sid))
     else:
         for contact in contacts:
-            tracking_sid = f"SID_{uuid.uuid4().hex[:12]}"
             db.session.add(MessageLog(recipient=contact.phone_number, message_body=f"[Uploaded MP3: {filename}]", status='MP3 Broadcast Queued', channel='Voice (MP3)', provider_sid=tracking_sid))
     db.session.commit()
     return f"MP3 campaign completed for group: {recipient_group}"
@@ -527,7 +499,7 @@ def upload_mp3_campaign():
             send_mp3_campaign.delay(recipient_group, mp3_file.filename)
             return redirect(url_for('dashboard'))
             
-    return "Invalid file format. Please upload an MP3 file. <a href='/'>Go back</a>", 400
+    return "Invalid file format. <a href='/'>Go back</a>", 400
 
 @app.route('/sms-webhook', methods=['POST'])
 def sms_webhook():
@@ -562,13 +534,7 @@ def create_template():
         flash('Title and body cannot be empty!', 'danger')
         return redirect(url_for('dashboard'))
         
-    new_template = Template(
-        user_id=current_user.id,  # Fixed: Links template directly to the logged-in user[cite: 3]
-        template_type=template_type,
-        title=title,
-        body=body
-    )
-    db.session.add(new_template)
+    db.session.add(Template(user_id=current_user.id, template_type=template_type, title=title, body=body))
     db.session.commit()
     
     flash('Template created successfully!', 'success')
