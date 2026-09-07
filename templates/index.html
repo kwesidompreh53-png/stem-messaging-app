@@ -341,7 +341,8 @@
             <div class="modal-body px-4 py-3">
               
               <div class="mb-3">
-                <select class="form-select text-dark bg-light border-0 py-2" id="templateTypeSelect" name="template_type" required style="border-radius: 8px;">
+                <!-- Added explicit inline onchange attribute as a guaranteed listener -->
+                <select class="form-select text-dark bg-light border-0 py-2" id="templateTypeSelect" name="template_type" required style="border-radius: 8px;" onchange="handleTemplateTypeChange(this)">
                   <option value="" disabled selected>Template Type</option>
                   <option value="SMS Template">SMS Template</option>
                   <option value="Voice Template">Voice Template</option>
@@ -506,13 +507,6 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            const selectElement = document.getElementById('templateTypeSelect');
-            if (selectElement) {
-                selectElement.addEventListener('change', function() {
-                    handleTemplateTypeChange(this);
-                });
-            }
-
             const createModal = document.getElementById('createTemplateModal');
             if (createModal) {
                 createModal.addEventListener('shown.bs.modal', function () {
@@ -639,7 +633,7 @@
                 const tds = trs[i].getElementsByTagName('td');
                 if (tds.length > 1) {
                     const titleText = tds[0].textContent || tds[0].innerText;
-                    const contentText = tds[1].textContent || tds[1].innerText;
+                    const contentText = tds[1].textContent || tds[1://] ? tds[1].textContent : "";
                     if (titleText.toLowerCase().indexOf(filter) > -1 || contentText.toLowerCase().indexOf(filter) > -1) {
                         trs[i].style.display = "";
                     } else {
