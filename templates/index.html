@@ -341,8 +341,7 @@
             <div class="modal-body px-4 py-3">
               
               <div class="mb-3">
-                <!-- Added explicit inline onchange attribute as a guaranteed listener -->
-                <select class="form-select text-dark bg-light border-0 py-2" id="templateTypeSelect" name="template_type" required style="border-radius: 8px;" onchange="handleTemplateTypeChange(this)">
+                <select class="form-select text-dark bg-light border-0 py-2" id="templateTypeSelect" name="template_type" required style="border-radius: 8px;">
                   <option value="" disabled selected>Template Type</option>
                   <option value="SMS Template">SMS Template</option>
                   <option value="Voice Template">Voice Template</option>
@@ -487,10 +486,7 @@
             if (selectElement.value === 'Voice Template') {
                 if (smsSection) smsSection.style.display = 'none';
                 if (voiceSection) voiceSection.style.display = 'block';
-                if (bodyInput) {
-                    bodyInput.removeAttribute('required');
-                    bodyInput.value = '';
-                }
+                if (bodyInput) bodyInput.removeAttribute('required');
                 if (submitBtn) {
                     submitBtn.innerText = "Upload & Broadcast MP3 Audio";
                     submitBtn.style.backgroundColor = "#f7931e";
@@ -507,11 +503,10 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            const createModal = document.getElementById('createTemplateModal');
-            if (createModal) {
-                createModal.addEventListener('shown.bs.modal', function () {
-                    const sel = document.getElementById('templateTypeSelect');
-                    if (sel) handleTemplateTypeChange(sel);
+            const selectElement = document.getElementById('templateTypeSelect');
+            if (selectElement) {
+                selectElement.addEventListener('change', function() {
+                    handleTemplateTypeChange(this);
                 });
             }
         });
@@ -633,7 +628,7 @@
                 const tds = trs[i].getElementsByTagName('td');
                 if (tds.length > 1) {
                     const titleText = tds[0].textContent || tds[0].innerText;
-                    const contentText = tds[1].textContent || tds[1://] ? tds[1].textContent : "";
+                    const contentText = tds[1].textContent || tds[1].innerText;
                     if (titleText.toLowerCase().indexOf(filter) > -1 || contentText.toLowerCase().indexOf(filter) > -1) {
                         trs[i].style.display = "";
                     } else {
