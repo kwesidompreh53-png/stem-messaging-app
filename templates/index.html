@@ -73,21 +73,27 @@
     <nav class="navbar navbar-dark bg-primary shadow-sm rounded mb-4">
         <div class="container-fluid position-relative d-flex justify-content-between align-items-center">
             
+            <!-- Left spacing placeholder to help keep title centered -->
             <div style="width: 120px;" class="d-none d-md-block"></div>
 
+            <!-- Centered Title -->
             <span class="navbar-brand mb-0 h1 text-center position-absolute start-50 translate-middle-x">
                 DANSOMAN DISTRICT ENGLISH ASSEMBLY DASHBOARD
             </span>
             
+            <!-- Right side: Voice, SMS, Wallet & Menu -->
             <div class="d-flex align-items-center ms-auto gap-2">
+                <!-- Voice Purchased Badge -->
                 <span class="badge bg-info text-dark fw-bold px-2 py-2 fs-6">
                     Voice: {{ voice_total }}
                 </span>
 
+                <!-- SMS Purchased Badge -->
                 <span class="badge bg-success text-white fw-bold px-2 py-2 fs-6">
                     SMS: {{ sms_total }}
                 </span>
 
+                <!-- Points Balance Badge -->
                 <a href="{{ url_for('buy_points') }}" class="btn btn-warning btn-sm fw-bold text-dark ms-1">
                     Wallet: {{ current_user.balance }}
                 </a>
@@ -113,6 +119,7 @@
             
             <!-- Column 1: Add Contact & Excel Upload Forms -->
             <div class="col-md-4">
+                <!-- Add New Contact Card -->
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-white fw-bold text-dark">Add New Contact</div>
                     <div class="card-body">
@@ -147,6 +154,7 @@
                     </div>
                 </div>
 
+                <!-- Upload Contacts from Excel Card -->
                 <div class="card shadow-sm">
                     <div class="card-header bg-white fw-bold text-dark">Upload Contacts from Excel</div>
                     <div class="card-body">
@@ -175,8 +183,9 @@
                 </div>
             </div>
 
-            <!-- Column 2: Saved Message Templates (Bigger Portion) -->
+            <!-- Column 2: Saved Message Templates (Bigger Portion) & Upload MP3 Forms -->
             <div class="col-md-8">
+                <!-- SAVED MESSAGE TEMPLATES CARD -->
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-white fw-bold text-dark d-flex justify-content-between align-items-center py-3">
                         <span class="fs-5">Saved Message Templates</span>
@@ -184,7 +193,7 @@
                             <div class="input-group input-group-sm" style="width: 220px;">
                                 <input type="text" id="templateSearch" class="form-control py-2" placeholder="Search..." onkeyup="filterTemplates()">
                             </div>
-                            <button type="button" class="btn btn-sm text-white fw-semibold px-3 py-2" style="background-color: #f7931e; border-radius: 6px;" data-bs-toggle="modal" data-bs-target="#createTemplateModal" onclick="resetCreateModal()">
+                            <button type="button" class="btn btn-sm text-white fw-semibold px-3 py-2" style="background-color: #f7931e; border-radius: 6px;" data-bs-toggle="modal" data-bs-target="#createTemplateModal">
                                 + Create Template
                             </button>
                         </div>
@@ -239,6 +248,46 @@
                                             </div>
                                         </td>
                                     </tr>
+
+                                    <!-- INDIVIDUAL EDIT TEMPLATE MODAL FOR EACH TEMPLATE -->
+                                    <div class="modal fade" id="editTemplateModal{{ template.id }}" tabindex="-1" aria-labelledby="editTemplateModalLabel{{ template.id }}" aria-hidden="true">
+                                      <div class="modal-dialog modal-lg modal-dialog-centered">
+                                        <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+                                          
+                                          <div class="modal-header border-bottom-0 pb-0 px-4 pt-4">
+                                            <h5 class="modal-title fw-bold text-dark fs-4" id="editTemplateModalLabel{{ template.id }}">Edit Template</h5>
+                                            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                                          </div>
+
+                                          <form action="{{ url_for('edit_template', template_id=template.id) }}" method="POST">
+                                            <div class="modal-body px-4 py-3 text-start">
+                                              
+                                              <div class="mb-3">
+                                                <select class="form-select text-dark bg-light border-0 py-2" name="template_type" required style="border-radius: 8px;">
+                                                    <option value="SMS Template" {% if template.template_type == 'SMS Template' %}selected{% endif %}>SMS Template</option>
+                                                    <option value="Voice Template" {% if template.template_type == 'Voice Template' %}selected{% endif %}>Voice Template</option>
+                                                </select>
+                                              </div>
+
+                                              <div class="mb-3">
+                                                <input type="text" class="form-control bg-light border-0 py-2 text-dark" name="title" value="{{ template.title }}" placeholder="Title" required style="border-radius: 8px;">
+                                              </div>
+
+                                              <div class="mb-3">
+                                                <textarea class="form-control bg-light border-0 p-3" name="body" rows="5" placeholder="Type your message here..." required style="border-radius: 8px; resize: none;">{{ template.body }}</textarea>
+                                              </div>
+
+                                            </div>
+
+                                            <div class="modal-footer border-top-0 px-4 pb-4 pt-2 d-flex justify-content-between align-items-center">
+                                              <button type="button" class="btn btn-light text-secondary px-4 fw-semibold border" data-bs-dismiss="modal" style="border-radius: 8px;">Cancel</button>
+                                              <button type="submit" class="btn text-white px-4 fw-semibold shadow-sm" style="background-color: #1b1577; border-radius: 8px;">Update Changes</button>
+                                            </div>
+                                          </form>
+                                        </div>
+                                      </div>
+                                    </div>
+
                                     {% endfor %}
                                 {% else %}
                                     <tr>
@@ -251,12 +300,42 @@
                         </table>
                     </div>
                 </div>
+
+                <!-- MP3 Audio Upload Card -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white fw-bold text-dark">Upload MP3 Audio Campaign</div>
+                    <div class="card-body">
+                        <form action="/upload-mp3-campaign" method="POST" enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-dark">Select Ministry</label>
+                                    <select class="form-select" name="recipient_group" required>
+                                        <option value="" disabled selected>Select a ministry...</option>
+                                        {% for group in groups %}
+                                        <option value="{{ group }}">{{ group }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-dark">Select MP3 Audio File</label>
+                                    <input type="file" class="form-control" name="mp3_file" accept=".mp3" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-dark">Schedule Time (Leave blank to send immediately)</label>
+                                <input type="datetime-local" class="form-control" name="schedule_time">
+                            </div>
+                            <button type="submit" class="btn btn-warning w-100 text-white">Upload & Broadcast MP3 Audio</button>
+                        </form>
+                    </div>
+                </div>
             </div>
 
         </div>
 
         <!-- Row 2: Data Tables (Contacts & Logs) -->
         <div class="row g-4 mt-2">
+            <!-- Contacts Table -->
             <div class="col-md-6">
                 <div class="card shadow-sm">
                     <div class="card-header bg-white fw-bold text-dark">Registered Contacts</div>
@@ -294,6 +373,7 @@
                 </div>
             </div>
 
+            <!-- Message Logs Table -->
             <div class="col-md-6">
                 <div class="card shadow-sm">
                     <div class="card-header bg-white fw-bold text-dark">Message Activity Logs</div>
@@ -341,7 +421,7 @@
             <div class="modal-body px-4 py-3">
               
               <div class="mb-3">
-                <select class="form-select text-dark bg-light border-0 py-2" id="templateTypeSelect" name="template_type" required style="border-radius: 8px;">
+                <select class="form-select text-dark bg-light border-0 py-2" id="templateTypeSelect" name="template_type" required style="border-radius: 8px;" onchange="handleTemplateTypeChange(this)">
                   <option value="" disabled selected>Template Type</option>
                   <option value="SMS Template">SMS Template</option>
                   <option value="Voice Template">Voice Template</option>
@@ -392,7 +472,7 @@
                       <span class="text-muted" style="font-size: 0.85rem;">Upload: WAV/MP3 • Max 5MB</span>
                   </div>
 
-                  <div class="p-4 mb-3" style="border: 2px dashed #cbd5e1; border-radius: 10px; background-color: #f8fafc;">
+                  <div class="p-4" style="border: 2px dashed #cbd5e1; border-radius: 10px; background-color: #f8fafc;">
                       <div class="row g-3">
                           <!-- Upload Card Option -->
                           <div class="col-md-6">
@@ -426,21 +506,13 @@
                           <span id="audioFileName" class="text-success small fw-semibold"></span>
                       </div>
                   </div>
-
-                  <!-- Schedule Time field -->
-                  <div class="mb-3">
-                      <label class="form-label text-dark small fw-semibold mb-1">Schedule Time (Leave blank to send immediately)</label>
-                      <input type="datetime-local" class="form-control bg-light border-0 py-2" name="schedule_time" style="border-radius: 8px;">
-                  </div>
               </div>
 
             </div>
 
             <div class="modal-footer border-top-0 px-4 pb-4 pt-2 d-flex justify-content-between align-items-center">
               <button type="button" class="btn btn-light text-secondary px-4 fw-semibold border" data-bs-dismiss="modal" style="border-radius: 8px;">Cancel</button>
-              
-              <!-- Dynamic Button matching your layout -->
-              <button type="submit" id="modalSubmitBtn" class="btn text-white px-4 fw-semibold shadow-sm" style="background-color: #f7931e; border-radius: 8px;">Save</button>
+              <button type="submit" class="btn text-white px-4 fw-semibold shadow-sm" style="background-color: #f7931e; border-radius: 8px;">Save</button>
             </div>
           </form>
         </div>
@@ -467,53 +539,8 @@
             }
         }
 
-        function resetCreateModal() {
-            const selectElement = document.getElementById('templateTypeSelect');
-            if (selectElement) {
-                selectElement.selectedIndex = 0;
-                handleTemplateTypeChange(selectElement);
-            }
-        }
-
-        function handleTemplateTypeChange(selectElement) {
-            const smsSection = document.getElementById('smsFieldsSection');
-            const voiceSection = document.getElementById('voiceFieldsSection');
-            const bodyInput = document.getElementById('templateBody');
-            const submitBtn = document.getElementById('modalSubmitBtn');
-
-            if (!selectElement) return;
-
-            if (selectElement.value === 'Voice Template') {
-                if (smsSection) smsSection.style.display = 'none';
-                if (voiceSection) voiceSection.style.display = 'block';
-                if (bodyInput) bodyInput.removeAttribute('required');
-                if (submitBtn) {
-                    submitBtn.innerText = "Upload & Broadcast MP3 Audio";
-                    submitBtn.style.backgroundColor = "#f7931e";
-                }
-            } else {
-                if (smsSection) smsSection.style.display = 'block';
-                if (voiceSection) voiceSection.style.display = 'none';
-                if (bodyInput) bodyInput.setAttribute('required', 'required');
-                if (submitBtn) {
-                    submitBtn.innerText = "Save";
-                    submitBtn.style.backgroundColor = "#f7931e";
-                }
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const selectElement = document.getElementById('templateTypeSelect');
-            if (selectElement) {
-                selectElement.addEventListener('change', function() {
-                    handleTemplateTypeChange(this);
-                });
-            }
-        });
-
         function insertVariable(variableText) {
             const textarea = document.getElementById('templateBody');
-            if (!textarea) return;
             const startPos = textarea.selectionStart;
             const endPos = textarea.selectionEnd;
             textarea.value = textarea.value.substring(0, startPos) + variableText + textarea.value.substring(endPos);
@@ -524,14 +551,26 @@
         }
 
         function updateStats(textarea) {
-            if (!textarea) return;
             const length = textarea.value.length;
-            const charCountElem = document.getElementById('charCount');
-            const msgCountElem = document.getElementById('msgCount');
-            
-            if (charCountElem) charCountElem.innerText = `${length} Character${length === 1 ? '' : 's'}`;
+            document.getElementById('charCount').innerText = `${length} Character${length === 1 ? '' : 's'}`;
             const messages = Math.ceil(length / 160) || 1;
-            if (msgCountElem) msgCountElem.innerText = `${messages} message${messages === 1 ? '' : 's'} per recipient`;
+            document.getElementById('msgCount').innerText = `${messages} message${messages === 1 ? '' : 's'} per recipient`;
+        }
+
+        function handleTemplateTypeChange(selectElement) {
+            const smsSection = document.getElementById('smsFieldsSection');
+            const voiceSection = document.getElementById('voiceFieldsSection');
+            const bodyInput = document.getElementById('templateBody');
+
+            if (selectElement.value === 'Voice Template') {
+                smsSection.style.display = 'none';
+                voiceSection.style.display = 'block';
+                if (bodyInput) bodyInput.removeAttribute('required');
+            } else {
+                smsSection.style.display = 'block';
+                voiceSection.style.display = 'none';
+                if (bodyInput) bodyInput.setAttribute('required', 'required');
+            }
         }
 
         function handleAudioFileSelected(input) {
@@ -541,9 +580,9 @@
                 const audioPlayback = document.getElementById('audioPlayback');
                 const fileNameSpan = document.getElementById('audioFileName');
 
-                if (audioPlayback) audioPlayback.src = URL.createObjectURL(file);
-                if (fileNameSpan) fileNameSpan.innerText = `Selected file: ${file.name}`;
-                if (previewContainer) previewContainer.style.display = 'block';
+                audioPlayback.src = URL.createObjectURL(file);
+                fileNameSpan.innerText = `Selected file: ${file.name}`;
+                previewContainer.style.display = 'block';
             }
         }
 
@@ -572,14 +611,16 @@
                     mediaRecorder.onstop = () => {
                         const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
                         const audioUrl = URL.createObjectURL(audioBlob);
-                        if (audioPlayback) audioPlayback.src = audioUrl;
-                        if (fileNameSpan) fileNameSpan.innerText = "Recorded voice note ready!";
-                        if (previewContainer) previewContainer.style.display = 'block';
+                        audioPlayback.src = audioUrl;
+                        fileNameSpan.innerText = "Recorded voice note ready!";
+                        previewContainer.style.display = 'block';
 
+                        // Attach recorded blob as a file to form submission
                         const file = new File([audioBlob], "recorded_voice.mp3", { type: "audio/mp3" });
                         const container = new DataTransfer();
                         container.items.add(file);
                         
+                        // We can assign it to a hidden file input or create one dynamically if needed
                         let hiddenInput = document.getElementById('recordedAudioInput');
                         if (!hiddenInput) {
                             hiddenInput = document.createElement('input');
@@ -587,41 +628,34 @@
                             hiddenInput.id = 'recordedAudioInput';
                             hiddenInput.name = 'audio_file';
                             hiddenInput.style.display = 'none';
-                            const form = document.querySelector('form[action="/create-template"]');
-                            if (form) form.appendChild(hiddenInput);
+                            document.querySelector('form[action="/create-template"]').appendChild(hiddenInput);
                         }
-                        if (hiddenInput) hiddenInput.files = container.files;
+                        hiddenInput.files = container.files;
                     };
 
                     mediaRecorder.start();
                     isRecording = true;
-                    if (recordStatusText) recordStatusText.innerText = "Recording...";
-                    if (recordSubText) recordSubText.innerText = "Click again to stop";
-                    if (recordCardBtn) {
-                        recordCardBtn.style.backgroundColor = "#fee2e2";
-                        recordCardBtn.style.borderColor = "#ef4444";
-                    }
+                    recordStatusText.innerText = "Recording...";
+                    recordSubText.innerText = "Click again to stop";
+                    recordCardBtn.style.backgroundColor = "#fee2e2";
+                    recordCardBtn.style.borderColor = "#ef4444";
                 } catch (err) {
                     alert("Microphone access denied or not supported by your browser.");
                 }
             } else {
-                if (mediaRecorder) mediaRecorder.stop();
+                mediaRecorder.stop();
                 isRecording = false;
-                if (recordStatusText) recordStatusText.innerText = "Record New";
-                if (recordSubText) recordSubText.innerText = "Direct capture";
-                if (recordCardBtn) {
-                    recordCardBtn.style.backgroundColor = "";
-                    recordCardBtn.style.borderColor = "";
-                }
+                recordStatusText.innerText = "Record New";
+                recordSubText.innerText = "Direct capture";
+                recordCardBtn.style.backgroundColor = "";
+                recordCardBtn.style.borderColor = "";
             }
         }
 
         function filterTemplates() {
             const input = document.getElementById('templateSearch');
-            if (!input) return;
             const filter = input.value.toLowerCase();
             const table = document.getElementById('templatesTable');
-            if (!table) return;
             const trs = table.getElementsByTagName('tr');
 
             for (let i = 1; i < trs.length; i++) {
