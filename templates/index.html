@@ -184,7 +184,7 @@
                             <div class="input-group input-group-sm" style="width: 220px;">
                                 <input type="text" id="templateSearch" class="form-control py-2" placeholder="Search..." onkeyup="filterTemplates()">
                             </div>
-                            <button type="button" class="btn btn-sm text-white fw-semibold px-3 py-2" style="background-color: #f7931e; border-radius: 6px;" data-bs-toggle="modal" data-bs-target="#createTemplateModal">
+                            <button type="button" class="btn btn-sm text-white fw-semibold px-3 py-2" style="background-color: #f7931e; border-radius: 6px;" data-bs-toggle="modal" data-bs-target="#createTemplateModal" onclick="resetCreateModal()">
                                 + Create Template
                             </button>
                         </div>
@@ -239,46 +239,6 @@
                                             </div>
                                         </td>
                                     </tr>
-
-                                    <!-- EDIT TEMPLATE MODAL -->
-                                    <div class="modal fade" id="editTemplateModal{{ template.id }}" tabindex="-1" aria-labelledby="editTemplateModalLabel{{ template.id }}" aria-hidden="true">
-                                      <div class="modal-dialog modal-lg modal-dialog-centered">
-                                        <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
-                                          
-                                          <div class="modal-header border-bottom-0 pb-0 px-4 pt-4">
-                                            <h5 class="modal-title fw-bold text-dark fs-4" id="editTemplateModalLabel{{ template.id }}">Edit Template</h5>
-                                            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
-                                          </div>
-
-                                          <form action="{{ url_for('edit_template', template_id=template.id) }}" method="POST">
-                                            <div class="modal-body px-4 py-3 text-start">
-                                              
-                                              <div class="mb-3">
-                                                <select class="form-select text-dark bg-light border-0 py-2" name="template_type" required style="border-radius: 8px;">
-                                                    <option value="SMS Template" {% if template.template_type == 'SMS Template' %}selected{% endif %}>SMS Template</option>
-                                                    <option value="Voice Template" {% if template.template_type == 'Voice Template' %}selected{% endif %}>Voice Template</option>
-                                                </select>
-                                              </div>
-
-                                              <div class="mb-3">
-                                                <input type="text" class="form-control bg-light border-0 py-2 text-dark" name="title" value="{{ template.title }}" placeholder="Title" required style="border-radius: 8px;">
-                                              </div>
-
-                                              <div class="mb-3">
-                                                <textarea class="form-control bg-light border-0 p-3" name="body" rows="5" placeholder="Type your message here..." required style="border-radius: 8px; resize: none;">{{ template.body }}</textarea>
-                                              </div>
-
-                                            </div>
-
-                                            <div class="modal-footer border-top-0 px-4 pb-4 pt-2 d-flex justify-content-between align-items-center">
-                                              <button type="button" class="btn btn-light text-secondary px-4 fw-semibold border" data-bs-dismiss="modal" style="border-radius: 8px;">Cancel</button>
-                                              <button type="submit" class="btn text-white px-4 fw-semibold shadow-sm" style="background-color: #1b1577; border-radius: 8px;">Update Changes</button>
-                                            </div>
-                                          </form>
-                                        </div>
-                                      </div>
-                                    </div>
-
                                     {% endfor %}
                                 {% else %}
                                     <tr>
@@ -467,7 +427,7 @@
                       </div>
                   </div>
 
-                  <!-- Schedule Time field matching your screenshot -->
+                  <!-- Schedule Time field -->
                   <div class="mb-3">
                       <label class="form-label text-dark small fw-semibold mb-1">Schedule Time (Leave blank to send immediately)</label>
                       <input type="datetime-local" class="form-control bg-light border-0 py-2" name="schedule_time" style="border-radius: 8px;">
@@ -479,7 +439,7 @@
             <div class="modal-footer border-top-0 px-4 pb-4 pt-2 d-flex justify-content-between align-items-center">
               <button type="button" class="btn btn-light text-secondary px-4 fw-semibold border" data-bs-dismiss="modal" style="border-radius: 8px;">Cancel</button>
               
-              <!-- Dynamic Button matching your screenshot (Yellow when Voice Template is selected) -->
+              <!-- Dynamic Button matching your layout -->
               <button type="submit" id="modalSubmitBtn" class="btn text-white px-4 fw-semibold shadow-sm" style="background-color: #f7931e; border-radius: 8px;">Save</button>
             </div>
           </form>
@@ -505,6 +465,12 @@
                     }
                 }
             }
+        }
+
+        function resetCreateModal() {
+            const selectElement = document.getElementById('templateTypeSelect');
+            selectElement.selectedIndex = 0;
+            handleTemplateTypeChange(selectElement);
         }
 
         function insertVariable(variableText) {
@@ -536,11 +502,13 @@
                 voiceSection.style.display = 'block';
                 if (bodyInput) bodyInput.removeAttribute('required');
                 submitBtn.innerText = "Upload & Broadcast MP3 Audio";
+                submitBtn.style.backgroundColor = "#f7931e";
             } else {
                 smsSection.style.display = 'block';
                 voiceSection.style.display = 'none';
                 if (bodyInput) bodyInput.setAttribute('required', 'required');
                 submitBtn.innerText = "Save";
+                submitBtn.style.backgroundColor = "#f7931e";
             }
         }
 
