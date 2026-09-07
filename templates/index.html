@@ -172,40 +172,41 @@
                 </div>
             </div>
 
-            <!-- Column 2: Saved Message Templates & Upload MP3 Forms -->
+            <!-- Column 2: Saved Message Templates (Bigger Portion) & Upload MP3 Forms -->
             <div class="col-md-8">
-                <!-- REPLACED BULK SMS CARD WITH SAVED MESSAGE TEMPLATES CARD -->
+                <!-- SAVED MESSAGE TEMPLATES CARD (Increased Height & Spacing) -->
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-white fw-bold text-dark d-flex justify-content-between align-items-center py-3">
-                        <span>Saved Message Templates</span>
+                        <span class="fs-5">Saved Message Templates</span>
                         <div class="d-flex align-items-center gap-2">
-                            <div class="input-group input-group-sm" style="width: 200px;">
-                                <input type="text" id="templateSearch" class="form-control" placeholder="Search..." onkeyup="filterTemplates()">
+                            <div class="input-group input-group-sm" style="width: 220px;">
+                                <input type="text" id="templateSearch" class="form-control py-2" placeholder="Search..." onkeyup="filterTemplates()">
                             </div>
-                            <button type="button" class="btn btn-sm text-white fw-semibold" style="background-color: #f7931e; border-radius: 6px;" data-bs-toggle="modal" data-bs-target="#createTemplateModal">
+                            <button type="button" class="btn btn-sm text-white fw-semibold px-3 py-2" style="background-color: #f7931e; border-radius: 6px;" data-bs-toggle="modal" data-bs-target="#createTemplateModal">
                                 + Create Template
                             </button>
                         </div>
                     </div>
-                    <div class="card-body table-responsive p-0" style="max-height: 320px; overflow-y: auto;">
+                    <!-- Expanded max-height for a much bigger display area -->
+                    <div class="card-body table-responsive p-0" style="min-height: 280px; max-height: 500px; overflow-y: auto;">
                         <table class="table table-hover align-middle mb-0" id="templatesTable">
                             <thead class="table-light sticky-top">
                                 <tr>
-                                    <th class="ps-3 py-3">Title</th>
+                                    <th class="ps-4 py-3">Title</th>
                                     <th class="py-3">Content</th>
                                     <th class="py-3">Message Type</th>
                                     <th class="py-3">Updated At</th>
-                                    <th class="text-end pe-3 py-3">Actions</th>
+                                    <th class="text-end pe-4 py-3">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% if templates %}
                                     {% for template in templates %}
                                     <tr>
-                                        <td class="ps-3 fw-semibold text-dark py-3">{{ template.title }}</td>
-                                        <td class="text-muted text-truncate py-3" style="max-width: 200px;">{{ template.body }}</td>
+                                        <td class="ps-4 fw-semibold text-dark py-3">{{ template.title }}</td>
+                                        <td class="text-muted text-truncate py-3" style="max-width: 250px;">{{ template.body }}</td>
                                         <td class="py-3">
-                                            <span class="badge px-2 py-1 fw-normal" style="background-color: #e0f2fe; color: #0284c7; font-size: 0.8rem;">
+                                            <span class="badge px-2 py-1 fw-normal" style="background-color: #e0f2fe; color: #0284c7; font-size: 0.85rem;">
                                                 {{ template.template_type }}
                                             </span>
                                         </td>
@@ -216,7 +217,7 @@
                                                 -
                                             {% endif %}
                                         </td>
-                                        <td class="text-end pe-3 py-3">
+                                        <td class="text-end pe-4 py-3">
                                             <div class="dropdown">
                                                 <button class="btn btn-sm btn-light border-0 text-secondary fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 18px; line-height: 1;">
                                                     &#8942;
@@ -237,10 +238,50 @@
                                             </div>
                                         </td>
                                     </tr>
+
+                                    <!-- INDIVIDUAL EDIT TEMPLATE MODAL FOR EACH TEMPLATE -->
+                                    <div class="modal fade" id="editTemplateModal{{ template.id }}" tabindex="-1" aria-labelledby="editTemplateModalLabel{{ template.id }}" aria-hidden="true">
+                                      <div class="modal-dialog modal-lg modal-dialog-centered">
+                                        <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+                                          
+                                          <div class="modal-header border-bottom-0 pb-0 px-4 pt-4">
+                                            <h5 class="modal-title fw-bold text-dark fs-4" id="editTemplateModalLabel{{ template.id }}">Edit Template</h5>
+                                            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                                          </div>
+
+                                          <form action="{{ url_for('edit_template', template_id=template.id) }}" method="POST">
+                                            <div class="modal-body px-4 py-3 text-start">
+                                              
+                                              <div class="mb-3">
+                                                <select class="form-select text-dark bg-light border-0 py-2" name="template_type" required style="border-radius: 8px;">
+                                                    <option value="SMS Template" {% if template.template_type == 'SMS Template' %}selected{% endif %}>SMS Template</option>
+                                                    <option value="Voice Template" {% if template.template_type == 'Voice Template' %}selected{% endif %}>Voice Template</option>
+                                                </select>
+                                              </div>
+
+                                              <div class="mb-3">
+                                                <input type="text" class="form-control bg-light border-0 py-2 text-dark" name="title" value="{{ template.title }}" placeholder="Title" required style="border-radius: 8px;">
+                                              </div>
+
+                                              <div class="mb-3">
+                                                <textarea class="form-control bg-light border-0 p-3" name="body" rows="5" placeholder="Type your message here..." required style="border-radius: 8px; resize: none;">{{ template.body }}</textarea>
+                                              </div>
+
+                                            </div>
+
+                                            <div class="modal-footer border-top-0 px-4 pb-4 pt-2 d-flex justify-content-between align-items-center">
+                                              <button type="button" class="btn btn-light text-secondary px-4 fw-semibold border" data-bs-dismiss="modal" style="border-radius: 8px;">Cancel</button>
+                                              <button type="submit" class="btn text-white px-4 fw-semibold shadow-sm" style="background-color: #1b1577; border-radius: 8px;">Update Changes</button>
+                                            </div>
+                                          </form>
+                                        </div>
+                                      </div>
+                                    </div>
+
                                     {% endfor %}
                                 {% else %}
                                     <tr>
-                                        <td colspan="5" class="text-center text-muted py-4">
+                                        <td colspan="5" class="text-center text-muted py-5">
                                             No message templates found. Click "+ Create Template" to add one.
                                         </td>
                                     </tr>
