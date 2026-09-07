@@ -486,7 +486,10 @@
             if (selectElement.value === 'Voice Template') {
                 if (smsSection) smsSection.style.display = 'none';
                 if (voiceSection) voiceSection.style.display = 'block';
-                if (bodyInput) bodyInput.removeAttribute('required');
+                if (bodyInput) {
+                    bodyInput.removeAttribute('required');
+                    bodyInput.value = '';
+                }
                 if (submitBtn) {
                     submitBtn.innerText = "Upload & Broadcast MP3 Audio";
                     submitBtn.style.backgroundColor = "#f7931e";
@@ -507,6 +510,14 @@
             if (selectElement) {
                 selectElement.addEventListener('change', function() {
                     handleTemplateTypeChange(this);
+                });
+            }
+
+            const createModal = document.getElementById('createTemplateModal');
+            if (createModal) {
+                createModal.addEventListener('shown.bs.modal', function () {
+                    const sel = document.getElementById('templateTypeSelect');
+                    if (sel) handleTemplateTypeChange(sel);
                 });
             }
         });
