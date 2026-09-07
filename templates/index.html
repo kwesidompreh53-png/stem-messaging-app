@@ -172,63 +172,81 @@
                 </div>
             </div>
 
-            <!-- Column 2: Send Bulk SMS & Upload MP3 Forms -->
+            <!-- Column 2: Saved Message Templates & Upload MP3 Forms -->
             <div class="col-md-8">
-                <!-- Bulk Campaign Card -->
+                <!-- REPLACED BULK SMS CARD WITH SAVED MESSAGE TEMPLATES CARD -->
                 <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center fw-bold text-dark">
-                        <span>Launch Bulk SMS</span>
-                        <!-- Button to trigger the Create Template Modal -->
-                        <button type="button" class="btn btn-sm text-white fw-semibold" style="background-color: #f7931e; border-radius: 6px;" data-bs-toggle="modal" data-bs-target="#createTemplateModal">
-                            + Create Template
-                        </button>
+                    <div class="card-header bg-white fw-bold text-dark d-flex justify-content-between align-items-center py-3">
+                        <span>Saved Message Templates</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="input-group input-group-sm" style="width: 200px;">
+                                <input type="text" id="templateSearch" class="form-control" placeholder="Search..." onkeyup="filterTemplates()">
+                            </div>
+                            <button type="button" class="btn btn-sm text-white fw-semibold" style="background-color: #f7931e; border-radius: 6px;" data-bs-toggle="modal" data-bs-target="#createTemplateModal">
+                                + Create Template
+                            </button>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <form action="/send-bulk-web" method="POST">
-                            <!-- Template Selection Dropdown -->
-                            <div class="mb-3">
-                                <label class="form-label text-dark">Load from Saved Template (Optional)</label>
-                                <select class="form-select" id="bulkTemplateSelect" onchange="loadTemplateIntoSMS(this)">
-                                    <option value="" disabled selected>Choose a template to load message...</option>
+                    <div class="card-body table-responsive p-0" style="max-height: 320px; overflow-y: auto;">
+                        <table class="table table-hover align-middle mb-0" id="templatesTable">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th class="ps-3 py-3">Title</th>
+                                    <th class="py-3">Content</th>
+                                    <th class="py-3">Message Type</th>
+                                    <th class="py-3">Updated At</th>
+                                    <th class="text-end pe-3 py-3">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if templates %}
                                     {% for template in templates %}
-                                        {% if template.template_type == 'SMS Template' %}
-                                        <option value="{{ template.body }}">{{ template.title }}</option>
-                                        {% endif %}
+                                    <tr>
+                                        <td class="ps-3 fw-semibold text-dark py-3">{{ template.title }}</td>
+                                        <td class="text-muted text-truncate py-3" style="max-width: 200px;">{{ template.body }}</td>
+                                        <td class="py-3">
+                                            <span class="badge px-2 py-1 fw-normal" style="background-color: #e0f2fe; color: #0284c7; font-size: 0.8rem;">
+                                                {{ template.template_type }}
+                                            </span>
+                                        </td>
+                                        <td class="text-muted small py-3">
+                                            {% if template.updated_at %}
+                                                {{ template.updated_at.strftime('%b %d, %Y, %I:%M:%S %p') }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end pe-3 py-3">
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-light border-0 text-secondary fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 18px; line-height: 1;">
+                                                    &#8942;
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border">
+                                                    <li>
+                                                        <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editTemplateModal{{ template.id }}">
+                                                            Edit
+                                                        </button>
+                                                    </li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li>
+                                                        <form action="{{ url_for('delete_template', template_id=template.id) }}" method="POST" style="display:inline;">
+                                                            <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Are you sure you want to delete this template?');">Delete</button>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
                                     {% endfor %}
-                                </select>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label text-dark">Select Ministry</label>
-                                    <select class="form-select" name="group_name" required>
-                                        <option value="" disabled selected>Select a ministry...</option>
-                                        {% for group in groups %}
-                                        <option value="{{ group }}">{{ group }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label text-dark">Channel</label>
-                                    <select class="form-select" name="channel">
-                                        <option value="SMS">SMS</option>
-                                        <option value="VOICE">Voice (Text-to-Speech)</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Message Body Input Field -->
-                            <div class="mb-3">
-                                <label class="form-label text-dark">Message Content</label>
-                                <textarea class="form-control" name="message_body" id="bulkMessageBody" rows="4" placeholder="Type message or select a template above..." required></textarea>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label text-dark">Schedule Time (Leave blank to send immediately)</label>
-                                <input type="datetime-local" class="form-control" name="schedule_time">
-                            </div>
-                            <button type="submit" class="btn btn-success w-100">Send Bulk SMS</button>
-                        </form>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-4">
+                                            No message templates found. Click "+ Create Template" to add one.
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -329,81 +347,6 @@
                                     <td colspan="3" class="text-center text-muted">No logs recorded yet.</td>
                                 </tr>
                                 {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Row 3: Saved Message Templates Table -->
-        <div class="row g-4 mt-2">
-            <div class="col-12">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-white fw-bold text-dark d-flex justify-content-between align-items-center py-3">
-                        <span>Saved Message Templates</span>
-                        <div class="input-group input-group-sm" style="width: 220px;">
-                            <input type="text" id="templateSearch" class="form-control" placeholder="Search..." onkeyup="filterTemplates()">
-                        </div>
-                    </div>
-                    <div class="card-body table-responsive p-0" style="max-height: 350px; overflow-y: auto;">
-                        <table class="table table-hover align-middle mb-0" id="templatesTable">
-                            <thead class="table-light sticky-top">
-                                <tr>
-                                    <th class="ps-3 py-3">Title</th>
-                                    <th class="py-3">Content</th>
-                                    <th class="py-3">Message Type</th>
-                                    <th class="py-3">Updated At</th>
-                                    <th class="text-end pe-3 py-3">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% if templates %}
-                                    {% for template in templates %}
-                                    <tr>
-                                        <td class="ps-3 fw-semibold text-dark py-3">{{ template.title }}</td>
-                                        <td class="text-muted text-truncate py-3" style="max-width: 250px;">{{ template.body }}</td>
-                                        <td class="py-3">
-                                            <span class="badge px-2 py-1 fw-normal" style="background-color: #e0f2fe; color: #0284c7; font-size: 0.8rem;">
-                                                {{ template.template_type }}
-                                            </span>
-                                        </td>
-                                        <td class="text-muted small py-3">
-                                            {% if template.updated_at %}
-                                                {{ template.updated_at.strftime('%b %d, %Y, %I:%M:%S %p') }}
-                                            {% else %}
-                                                -
-                                            {% endif %}
-                                        </td>
-                                        <td class="text-end pe-3 py-3">
-                                            <div class="dropdown">
-                                                <button class="btn btn-sm btn-light border-0 text-secondary fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 18px; line-height: 1;">
-                                                    &#8942;
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border">
-                                                    <li>
-                                                        <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editTemplateModal{{ template.id }}">
-                                                            Edit
-                                                        </button>
-                                                    </li>
-                                                    <li><hr class="dropdown-divider"></li>
-                                                    <li>
-                                                        <form action="{{ url_for('delete_template', template_id=template.id) }}" method="POST" style="display:inline;">
-                                                            <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Are you sure you want to delete this template?');">Delete</button>
-                                                        </form>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                {% else %}
-                                    <tr>
-                                        <td colspan="5" class="text-center text-muted py-5">
-                                            No message templates found. Click "+ Create Template" to add one.
-                                        </td>
-                                    </tr>
-                                {% endif %}
                             </tbody>
                         </table>
                     </div>
@@ -515,14 +458,6 @@
             document.getElementById('charCount').innerText = `${length} Character${length === 1 ? '' : 's'}`;
             const messages = Math.ceil(length / 160) || 1;
             document.getElementById('msgCount').innerText = `${messages} message${messages === 1 ? '' : 's'} per recipient`;
-        }
-
-        function loadTemplateIntoSMS(selectElement) {
-            const selectedBody = selectElement.value;
-            const messageBodyTextarea = document.getElementById('bulkMessageBody');
-            if (messageBodyTextarea) {
-                messageBodyTextarea.value = selectedBody;
-            }
         }
 
         function filterTemplates() {
