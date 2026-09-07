@@ -55,6 +55,17 @@
         .dropdown-content.show {
             display: block;
         }
+        .voice-card-option {
+            border: 2px dashed #cbd5e1;
+            border-radius: 10px;
+            background-color: #f8fafc;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .voice-card-option:hover {
+            border-color: #f7931e;
+            background-color: #fff7ed;
+        }
     </style>
 {% endblock %}
 
@@ -174,7 +185,7 @@
 
             <!-- Column 2: Saved Message Templates (Bigger Portion) & Upload MP3 Forms -->
             <div class="col-md-8">
-                <!-- SAVED MESSAGE TEMPLATES CARD (Increased Height & Spacing) -->
+                <!-- SAVED MESSAGE TEMPLATES CARD -->
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-white fw-bold text-dark d-flex justify-content-between align-items-center py-3">
                         <span class="fs-5">Saved Message Templates</span>
@@ -187,7 +198,6 @@
                             </button>
                         </div>
                     </div>
-                    <!-- Expanded max-height for a much bigger display area -->
                     <div class="card-body table-responsive p-0" style="min-height: 280px; max-height: 500px; overflow-y: auto;">
                         <table class="table table-hover align-middle mb-0" id="templatesTable">
                             <thead class="table-light sticky-top">
@@ -407,11 +417,11 @@
             <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
 
-          <form action="/create-template" method="POST">
+          <form action="/create-template" method="POST" enctype="multipart/form-data">
             <div class="modal-body px-4 py-3">
               
               <div class="mb-3">
-                <select class="form-select text-muted bg-light border-0 py-2" name="template_type" required style="border-radius: 8px;">
+                <select class="form-select text-dark bg-light border-0 py-2" id="templateTypeSelect" name="template_type" required style="border-radius: 8px;" onchange="handleTemplateTypeChange(this)">
                   <option value="" disabled selected>Template Type</option>
                   <option value="SMS Template">SMS Template</option>
                   <option value="Voice Template">Voice Template</option>
@@ -422,41 +432,87 @@
                 <input type="text" class="form-control bg-light border-0 py-2 text-dark" name="title" placeholder="Title" required style="border-radius: 8px;">
               </div>
 
-              <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-                <button type="button" class="btn btn-sm btn-light border text-secondary px-2 py-1 font-monospace" style="font-size: 0.8rem; border-radius: 6px;" onclick="insertVariable('{full_name}')">
-                  <span class="text-warning">&lt;&gt;</span> Full Name
-                </button>
-                <button type="button" class="btn btn-sm btn-light border text-secondary px-2 py-1 font-monospace" style="font-size: 0.8rem; border-radius: 6px;" onclick="insertVariable('{first_name}')">
-                  <span class="text-warning">&lt;&gt;</span> First Name
-                </button>
-                <button type="button" class="btn btn-sm btn-light border text-secondary px-2 py-1 font-monospace" style="font-size: 0.8rem; border-radius: 6px;" onclick="insertVariable('{last_name}')">
-                  <span class="text-warning">&lt;&gt;</span> Last Name
-                </button>
-              </div>
-
-              <div class="mb-3">
-                <textarea class="form-control bg-light border-0 p-3" id="templateBody" name="body" rows="5" placeholder="Type your message here..." style="border-radius: 8px; resize: none;" oninput="updateStats(this)"></textarea>
-              </div>
-
-              <div class="d-flex justify-content-between align-items-center text-muted small px-1">
-                <div class="d-flex align-items-center gap-4">
-                  <span id="charCount">0 Characters</span>
-                  <span id="msgCount">1 message per recipient</span>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                  <span>Encoding: <span class="badge bg-success text-white fw-normal" style="font-size: 0.75rem;">GSM</span></span>
-                  <div class="form-check form-switch m-0 d-flex align-items-center gap-1 ps-0">
-                    <label class="form-check-label mb-0 me-2" for="lineBreaksToggle" style="font-size: 0.85rem;">Line breaks</label>
-                    <input class="form-check-input ms-0" type="checkbox" role="switch" id="lineBreaksToggle" checked style="cursor: pointer; background-color: #f7931e; border-color: #f7931e;">
+              <!-- SMS TEMPLATE SPECIFIC FIELDS -->
+              <div id="smsFieldsSection">
+                  <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                    <button type="button" class="btn btn-sm btn-light border text-secondary px-2 py-1 font-monospace" style="font-size: 0.8rem; border-radius: 6px;" onclick="insertVariable('{full_name}')">
+                      <span class="text-warning">&lt;&gt;</span> Full Name
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light border text-secondary px-2 py-1 font-monospace" style="font-size: 0.8rem; border-radius: 6px;" onclick="insertVariable('{first_name}')">
+                      <span class="text-warning">&lt;&gt;</span> First Name
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light border text-secondary px-2 py-1 font-monospace" style="font-size: 0.8rem; border-radius: 6px;" onclick="insertVariable('{last_name}')">
+                      <span class="text-warning">&lt;&gt;</span> Last Name
+                    </button>
                   </div>
-                </div>
+
+                  <div class="mb-3">
+                    <textarea class="form-control bg-light border-0 p-3" id="templateBody" name="body" rows="5" placeholder="Type your message here..." style="border-radius: 8px; resize: none;" oninput="updateStats(this)"></textarea>
+                  </div>
+
+                  <div class="d-flex justify-content-between align-items-center text-muted small px-1">
+                    <div class="d-flex align-items-center gap-4">
+                      <span id="charCount">0 Characters</span>
+                      <span id="msgCount">1 message per recipient</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                      <span>Encoding: <span class="badge bg-success text-white fw-normal" style="font-size: 0.75rem;">GSM</span></span>
+                      <div class="form-check form-switch m-0 d-flex align-items-center gap-1 ps-0">
+                        <label class="form-check-label mb-0 me-2" for="lineBreaksToggle" style="font-size: 0.85rem;">Line breaks</label>
+                        <input class="form-check-input ms-0" type="checkbox" role="switch" id="lineBreaksToggle" checked style="cursor: pointer; background-color: #f7931e; border-color: #f7931e;">
+                      </div>
+                    </div>
+                  </div>
+              </div>
+
+              <!-- VOICE TEMPLATE SPECIFIC FIELDS (Hidden by default) -->
+              <div id="voiceFieldsSection" style="display: none;">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                      <label class="form-label text-dark fw-bold mb-0">Voice Note</label>
+                      <span class="text-muted" style="font-size: 0.85rem;">Upload: WAV/MP3 • Max 5MB</span>
+                  </div>
+
+                  <div class="p-4" style="border: 2px dashed #cbd5e1; border-radius: 10px; background-color: #f8fafc;">
+                      <div class="row g-3">
+                          <!-- Upload Card Option -->
+                          <div class="col-md-6">
+                              <div class="voice-card-option p-4 text-center h-100 d-flex flex-column justify-content-center align-items-center position-relative">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#64748b" class="bi bi-upload mb-2" viewBox="0 0 16 16">
+                                      <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                                      <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+                                  </svg>
+                                  <span class="fw-semibold text-dark mb-1">Upload Audio</span>
+                                  <span class="text-muted" style="font-size: 0.8rem;">WAV or MP3</span>
+                                  <input type="file" name="audio_file" id="audioFileInput" accept=".mp3, .wav" class="position-absolute top-0 start-0 w-100 h-100 opacity-0" style="cursor: pointer;" onchange="handleAudioFileSelected(this)">
+                              </div>
+                          </div>
+
+                          <!-- Record New Card Option -->
+                          <div class="col-md-6">
+                              <div class="voice-card-option p-4 text-center h-100 d-flex flex-column justify-content-center align-items-center" id="recordCardBtn" onclick="toggleRecording()">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#ef4444" class="bi bi-mic mb-2" viewBox="0 0 16 16" id="micIcon">
+                                      <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"/>
+                                      <path d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0v5zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3z"/>
+                                  </svg>
+                                  <span class="fw-semibold text-dark mb-1" id="recordStatusText">Record New</span>
+                                  <span class="text-muted" style="font-size: 0.8rem;" id="recordSubText">Direct capture</span>
+                              </div>
+                          </div>
+                      </div>
+
+                      <!-- Selected/Recorded Audio Preview Container -->
+                      <div id="audioPreviewContainer" class="mt-3 text-center" style="display: none;">
+                          <audio id="audioPlayback" controls class="w-100 mb-2"></audio>
+                          <span id="audioFileName" class="text-success small fw-semibold"></span>
+                      </div>
+                  </div>
               </div>
 
             </div>
 
             <div class="modal-footer border-top-0 px-4 pb-4 pt-2 d-flex justify-content-between align-items-center">
               <button type="button" class="btn btn-light text-secondary px-4 fw-semibold border" data-bs-dismiss="modal" style="border-radius: 8px;">Cancel</button>
-              <button type="submit" class="btn text-white px-4 fw-semibold shadow-sm" style="background-color: #1b1577; border-radius: 8px;">Save</button>
+              <button type="submit" class="btn text-white px-4 fw-semibold shadow-sm" style="background-color: #f7931e; border-radius: 8px;">Save</button>
             </div>
           </form>
         </div>
@@ -499,6 +555,101 @@
             document.getElementById('charCount').innerText = `${length} Character${length === 1 ? '' : 's'}`;
             const messages = Math.ceil(length / 160) || 1;
             document.getElementById('msgCount').innerText = `${messages} message${messages === 1 ? '' : 's'} per recipient`;
+        }
+
+        function handleTemplateTypeChange(selectElement) {
+            const smsSection = document.getElementById('smsFieldsSection');
+            const voiceSection = document.getElementById('voiceFieldsSection');
+            const bodyInput = document.getElementById('templateBody');
+
+            if (selectElement.value === 'Voice Template') {
+                smsSection.style.display = 'none';
+                voiceSection.style.display = 'block';
+                if (bodyInput) bodyInput.removeAttribute('required');
+            } else {
+                smsSection.style.display = 'block';
+                voiceSection.style.display = 'none';
+                if (bodyInput) bodyInput.setAttribute('required', 'required');
+            }
+        }
+
+        function handleAudioFileSelected(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const previewContainer = document.getElementById('audioPreviewContainer');
+                const audioPlayback = document.getElementById('audioPlayback');
+                const fileNameSpan = document.getElementById('audioFileName');
+
+                audioPlayback.src = URL.createObjectURL(file);
+                fileNameSpan.innerText = `Selected file: ${file.name}`;
+                previewContainer.style.display = 'block';
+            }
+        }
+
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+
+        async function toggleRecording() {
+            const recordStatusText = document.getElementById('recordStatusText');
+            const recordSubText = document.getElementById('recordSubText');
+            const recordCardBtn = document.getElementById('recordCardBtn');
+            const previewContainer = document.getElementById('audioPreviewContainer');
+            const audioPlayback = document.getElementById('audioPlayback');
+            const fileNameSpan = document.getElementById('audioFileName');
+
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        audioPlayback.src = audioUrl;
+                        fileNameSpan.innerText = "Recorded voice note ready!";
+                        previewContainer.style.display = 'block';
+
+                        // Attach recorded blob as a file to form submission
+                        const file = new File([audioBlob], "recorded_voice.mp3", { type: "audio/mp3" });
+                        const container = new DataTransfer();
+                        container.items.add(file);
+                        
+                        // We can assign it to a hidden file input or create one dynamically if needed
+                        let hiddenInput = document.getElementById('recordedAudioInput');
+                        if (!hiddenInput) {
+                            hiddenInput = document.createElement('input');
+                            hiddenInput.type = 'file';
+                            hiddenInput.id = 'recordedAudioInput';
+                            hiddenInput.name = 'audio_file';
+                            hiddenInput.style.display = 'none';
+                            document.querySelector('form[action="/create-template"]').appendChild(hiddenInput);
+                        }
+                        hiddenInput.files = container.files;
+                    };
+
+                    mediaRecorder.start();
+                    isRecording = true;
+                    recordStatusText.innerText = "Recording...";
+                    recordSubText.innerText = "Click again to stop";
+                    recordCardBtn.style.backgroundColor = "#fee2e2";
+                    recordCardBtn.style.borderColor = "#ef4444";
+                } catch (err) {
+                    alert("Microphone access denied or not supported by your browser.");
+                }
+            } else {
+                mediaRecorder.stop();
+                isRecording = false;
+                recordStatusText.innerText = "Record New";
+                recordSubText.innerText = "Direct capture";
+                recordCardBtn.style.backgroundColor = "";
+                recordCardBtn.style.borderColor = "";
+            }
         }
 
         function filterTemplates() {
