@@ -102,7 +102,7 @@
                         <!-- Import Contacts & Ministry Filter Form -->
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <form action="{{ url_for('import_excel') }}" method="POST" enctype="multipart/form-data" class="d-flex gap-2">
+                                <form action="{{ url_for('upload_contacts_excel') }}" method="POST" enctype="multipart/form-data" class="d-flex gap-2">
                                     <input type="file" class="form-control form-control-sm" name="file" accept=".xlsx, .xls" required>[cite: 19]
                                     <button type="submit" class="btn btn-outline-secondary btn-sm text-nowrap">Import Excel</button>[cite: 19]
                                 </form>
